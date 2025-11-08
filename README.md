@@ -1,24 +1,16 @@
 # iOS Voice Assistant – Take-Home Assignment
 
-A small iOS app that records your voice, transcribes it using OpenAI’s Whisper, sends it to GPT-4o-mini, and speaks the reply back to you.  
-Built for a take-home test.
+An iOS app that records your voice, transcribes it using OpenAI’s Whisper, sends it to GPT-4o-mini, and speaks the reply back to you.  
 
 ## What It Does
 
-- 🎙 Records voice using `AVAudioRecorder`
-- ✍️ Transcribes with OpenAI Whisper
-- 💬 Gets smart replies from GPT-4o-mini
-- 🔊 Reads them out loud with text-to-speech
-- 🧩 Uses MVVM + dependency injection
-- 🧠 Keeps code testable with protocols
-- 🎨 Simple SwiftUI chat-style interface
-
-## Requirements
-
-- Xcode 15+
-- iOS 17+
-- Swift 5.9+
-- OpenAI API key
+- Records voice using `AVAudioRecorder`
+- Transcribes with Apple Speech framework
+- Gets replies from GPT-4o-mini
+- Reads them out loud with text-to-speech
+- Uses MVVM pattern
+- Testable coding
+- All interface made with SwiftUI
 
 ## How to Run
 

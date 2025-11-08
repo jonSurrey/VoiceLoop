@@ -11,14 +11,12 @@ struct APIConfig {
         return key
     }
     
-    // MARK: - Endpoints
+    // MARK: - Endpoint
     
-    static let whisperURL = "https://api.openai.com/v1/audio/transcriptions"
     static let chatCompletionURL = "https://api.openai.com/v1/chat/completions"
     
-    // MARK: - Models
+    // MARK: - Model
     
-    static let whisperModel = "whisper-1"
     static let chatModel = "gpt-4o-mini"
     
     // MARK: - Validation
