@@ -28,6 +28,9 @@ final class ChatService: ChatProtocol {
     
     func sendMessage(messages: [Message]) async throws -> String {
         // Return mock response in debug mode
+        //
+        // We use this mock because the API is returning 
+        // error 429: "You exceeded your current quota, please check your plan and billing details".
         if Self.isDebugMode {
             try await Task.sleep(nanoseconds: 500_000_000) // Simulate 0.5s delay
             return "This is a mock response for testing. Debug mode is enabled, so no actual API call is being made."
