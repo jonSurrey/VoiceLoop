@@ -5,7 +5,7 @@ struct VoiceLoopApp: App {
     @State private var viewModel = ConversationViewModel(
         recorder: AudioRecorder(),
         transcriber: AppleSpeechTranscriber(),
-        chat: OpenAIChatService(),
+        chat: OpenAIChatService(apiClient: APIClient(apiKey: APIConfig.openAIAPIKey)),
         synthesizer: SpeechSynthesizer()
     )
 

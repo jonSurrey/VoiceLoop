@@ -19,7 +19,7 @@ struct Message: Identifiable, Equatable {
     }
 }
 
-enum MessageRole: String, Codable {
-    case user = "user"
-    case assistant = "assistant"
+enum MessageRole: String {
+    case user
+    case assistant
 }

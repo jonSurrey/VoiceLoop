@@ -3,53 +3,30 @@ import Foundation
 final class OpenAIChatService: ChatCompleting {
     /// Returns a canned reply so the app works without an OpenAI key or quota.
     static var isDebugMode: Bool = true
-    
+    private static let debugReply = "This is a mock response for testing. Debug mode is enabled, so no actual API call is being made."
+    private static let debugReplyDelay: Duration = .milliseconds(500)
+
     private let apiClient: APIClient
     private let endpoint: String
     private let model: String
-    
-    init(
-        apiKey: String = APIConfig.openAIAPIKey,
-        endpoint: String = APIConfig.chatCompletionURL,
-        model: String = APIConfig.chatModel
-    ) {
-        self.apiClient = APIClient(apiKey: apiKey)
+
+    init(apiClient: APIClient, endpoint: String = APIConfig.chatCompletionURL, model: String = APIConfig.chatModel) {
+        self.apiClient = apiClient
         self.endpoint = endpoint
         self.model = model
     }
-    
+
     func reply(to messages: [Message]) async throws -> String {
         if Self.isDebugMode {
-            try await Task.sleep(nanoseconds: 500_000_000)
-            return "This is a mock response for testing. Debug mode is enabled, so no actual API call is being made."
+            try await Task.sleep(for: Self.debugReplyDelay)
+            return Self.debugReply
         }
-        
-        let apiMessages = messages.map { message in
-            ChatCompletionRequest.ChatMessage(
-                role: message.role.rawValue,
-                content: message.content
-            )
+
+        let request = ChatCompletionRequest(model: model, messages: messages)
+        let response: ChatCompletionResponse = try await apiClient.post(request, to: endpoint)
+        guard let reply = response.choices.first?.message.content else {
+            throw APIError.invalidResponse
         }
-        
-        let requestBody = ChatCompletionRequest(
-            model: model,
-            messages: apiMessages
-        )
-        
-        guard let httpBody = try? JSONEncoder().encode(requestBody) else {
-            throw APIError.decodingError
-        }
-        
-        let response: ChatCompletionResponse = try await apiClient.request(
-            endpoint: endpoint,
-            method: "POST",
-            body: httpBody
-        )
-        
-        guard let firstChoice = response.choices.first else {
-            throw APIError.noData
-        }
-        
-        return firstChoice.message.content
+        return reply
     }
 }
