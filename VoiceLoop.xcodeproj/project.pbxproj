@@ -424,8 +424,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "VoiceLoop/Info.plist";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VoiceLoop/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VoiceLoop;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "VoiceLoop records your voice so it can answer you.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "VoiceLoop turns your recording into text before sending it to the AI.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -454,8 +457,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "VoiceLoop/Info.plist";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VoiceLoop/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VoiceLoop;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "VoiceLoop records your voice so it can answer you.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "VoiceLoop turns your recording into text before sending it to the AI.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
