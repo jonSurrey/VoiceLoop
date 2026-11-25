@@ -1,12 +1,13 @@
 import Foundation
-import SwiftUI
+import Observation
 
-class ConversationViewModel: ObservableObject {
-    @Published var messages: [Message] = []
-    @Published var state: AppState = .idle
-    @Published var errorMessage: String?
-    @Published var hasMicrophonePermission: Bool = false
-    @Published var hasRecordingData: Bool = false
+@Observable
+final class ConversationViewModel {
+    var messages: [Message] = []
+    var state: AppState = .idle
+    var errorMessage: String?
+    var hasMicrophonePermission: Bool = false
+    var hasRecordingData: Bool = false
     
     private let audioRecordingService: AudioRecordingProtocol
     private let transcriptionService: TranscriptionProtocol

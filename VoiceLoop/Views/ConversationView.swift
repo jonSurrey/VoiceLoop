@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ConversationView: View {
-    @ObservedObject var viewModel: ConversationViewModel
+    let viewModel: ConversationViewModel
     
     var body: some View {
         NavigationStack {

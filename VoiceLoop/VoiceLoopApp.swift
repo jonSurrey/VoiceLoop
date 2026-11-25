@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct VoiceLoopApp: App {
-    @StateObject private var viewModel = ConversationViewModel(
+    @State private var viewModel = ConversationViewModel(
         audioRecordingService: AudioRecordingService(),
         transcriptionService: TranscriptionService(),
         chatService: ChatService(),
