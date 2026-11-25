@@ -52,9 +52,4 @@ final class OpenAIChatService: ChatCompleting {
         
         return firstChoice.message.content
     }
-    
-    func sendMessage(text: String) async throws -> String {
-        let message = Message(role: .user, content: text)
-        return try await reply(to: [message])
-    }
 }

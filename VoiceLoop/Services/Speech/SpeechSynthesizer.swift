@@ -27,18 +27,6 @@ final class SpeechSynthesizer: NSObject, SpeechSynthesizing {
         synthesizer.speak(utterance)
     }
     
-    func pause() {
-        if synthesizer.isSpeaking {
-            synthesizer.pauseSpeaking(at: .immediate)
-        }
-    }
-    
-    func resume() {
-        if synthesizer.isPaused {
-            synthesizer.continueSpeaking()
-        }
-    }
-    
     func stop() {
         if synthesizer.isSpeaking || synthesizer.isPaused {
             synthesizer.stopSpeaking(at: .immediate)

@@ -2,7 +2,7 @@ import Foundation
 import AVFoundation
 
 final class AudioRecorder: NSObject, AudioRecording {
-    var isRecording: Bool {
+    private var isRecording: Bool {
         audioRecorder?.isRecording ?? false
     }
     

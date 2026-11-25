@@ -155,7 +155,6 @@ final class MockAudioRecorder: AudioRecording {
     var hasPermission = true
     var startRecordingCalled = false
     var stopRecordingCalled = false
-    var isRecording = false
     
     func requestPermission() async -> Bool {
         return hasPermission
@@ -167,13 +166,11 @@ final class MockAudioRecorder: AudioRecording {
     
     func startRecording() throws -> URL {
         startRecordingCalled = true
-        isRecording = true
         return URL(fileURLWithPath: "/tmp/test.m4a")
     }
     
     func stopRecording() -> URL? {
         stopRecordingCalled = true
-        isRecording = false
         return URL(fileURLWithPath: "/tmp/test.m4a")
     }
     
@@ -202,10 +199,6 @@ final class MockChat: ChatCompleting {
         }
         return mockResponse
     }
-    
-    func sendMessage(text: String) async throws -> String {
-        return try await reply(to: [])
-    }
 }
 
 final class MockSpeechSynthesizer: SpeechSynthesizing {
@@ -221,7 +214,4 @@ final class MockSpeechSynthesizer: SpeechSynthesizing {
     func stop() {
         stopCalled = true
     }
-    
-    func pause() {}
-    func resume() {}
 }

@@ -1,9 +1,5 @@
 import Foundation
 
-struct TranscriptionResponse: Codable {
-    let text: String
-}
-
 struct ChatCompletionRequest: Codable {
     let model: String
     let messages: [ChatMessage]

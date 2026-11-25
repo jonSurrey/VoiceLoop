@@ -15,14 +15,5 @@ enum ConversationState {
     var canStopRecording: Bool {
         self == .recording
     }
-    
-    var isProcessing: Bool {
-        switch self {
-        case .transcribing, .generating, .speaking:
-            return true
-        default:
-            return false
-        }
-    }
 }
 
