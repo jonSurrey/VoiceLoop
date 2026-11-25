@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 final class APIClient {
     private static let timeout: TimeInterval = 60
@@ -27,13 +28,11 @@ final class APIClient {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try encode(body)
 
-        Logger.logRequest(request)
         let (data, response) = try await send(request)
-        Logger.logResponse(data: data, response: response, error: nil)
-
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse
         }
+        Logger.network.debug("POST \(url.absoluteString, privacy: .public) → \(httpResponse.statusCode)")
         guard HTTPStatus.success.contains(httpResponse.statusCode) else {
             throw APIError.server(statusCode: httpResponse.statusCode)
         }
@@ -51,7 +50,8 @@ final class APIClient {
     private func send(_ request: URLRequest) async throws -> (Data, URLResponse) {
         do {
             return try await httpClient.data(for: request)
-        } catch is URLError {
+        } catch let error as URLError {
+            Logger.network.error("Request failed: \(error.localizedDescription, privacy: .public)")
             throw APIError.network
         }
     }
