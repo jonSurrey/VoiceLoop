@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "136949D72EBA32EC001C3ACE"
-               BuildableName = "Luzia-Home-Test.app"
-               BlueprintName = "Luzia-Home-Test"
-               ReferencedContainer = "container:Luzia-Home-Test.xcodeproj">
+               BuildableName = "VoiceLoop.app"
+               BlueprintName = "VoiceLoop"
+               ReferencedContainer = "container:VoiceLoop.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "136949E42EBA32ED001C3ACE"
-               BuildableName = "Luzia-Home-TestTests.xctest"
-               BlueprintName = "Luzia-Home-TestTests"
-               ReferencedContainer = "container:Luzia-Home-Test.xcodeproj">
+               BuildableName = "VoiceLoopTests.xctest"
+               BlueprintName = "VoiceLoopTests"
+               ReferencedContainer = "container:VoiceLoop.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "136949D72EBA32EC001C3ACE"
-            BuildableName = "Luzia-Home-Test.app"
-            BlueprintName = "Luzia-Home-Test"
-            ReferencedContainer = "container:Luzia-Home-Test.xcodeproj">
+            BuildableName = "VoiceLoop.app"
+            BlueprintName = "VoiceLoop"
+            ReferencedContainer = "container:VoiceLoop.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "136949D72EBA32EC001C3ACE"
-            BuildableName = "Luzia-Home-Test.app"
-            BlueprintName = "Luzia-Home-Test"
-            ReferencedContainer = "container:Luzia-Home-Test.xcodeproj">
+            BuildableName = "VoiceLoop.app"
+            BlueprintName = "VoiceLoop"
+            ReferencedContainer = "container:VoiceLoop.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

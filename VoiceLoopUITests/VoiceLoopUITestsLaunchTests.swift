@@ -1,6 +1,6 @@
 import XCTest
 
-final class Luzia_Home_TestUITestsLaunchTests: XCTestCase {
+final class VoiceLoopUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
