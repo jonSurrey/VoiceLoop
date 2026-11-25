@@ -14,7 +14,6 @@ struct ConversationView: View {
                 recordButtonSection
                     .padding(.bottom, Layout.recordButtonBottomPadding)
             }
-            .background(Color(.white))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -23,7 +22,7 @@ struct ConversationView: View {
                             ProgressView()
                                 .scaleEffect(Layout.titleProgressScale)
                         }
-                        Text(viewModel.state == .idle ? "Voice Assistant" : viewModel.statusText)
+                        Text(viewModel.state == .idle ? "VoiceLoop" : viewModel.statusText)
                             .font(.headline)
                     }
                 }
@@ -33,7 +32,7 @@ struct ConversationView: View {
                             viewModel.stopSpeaking()
                         }
                         .foregroundColor(.red)
-                    } else if !viewModel.messages.isEmpty {
+                    } else if viewModel.state == .idle && !viewModel.messages.isEmpty {
                         Button(action: {
                             viewModel.clearConversation()
                         }) {
@@ -42,20 +41,15 @@ struct ConversationView: View {
                     }
                 }
             }
-            .alert("Oops!", isPresented: .constant(viewModel.errorMessage != nil)) {
-                Button("OK") {
-                    viewModel.dismissError()
-                }
-                if viewModel.canRetry {
+            .alert("Oops!", isPresented: isShowingError, presenting: viewModel.error) { failure in
+                Button("OK", role: .cancel) {}
+                if failure.retryStep != nil {
                     Button("Try Again") {
-                        Task { await viewModel.retry() }
+                        Task { await viewModel.retry(failure) }
                     }
                 }
-            } message: {
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(.body)
-                }
+            } message: { failure in
+                Text(failure.message)
             }
             .task {
                 if !viewModel.hasMicrophonePermission {
@@ -65,13 +59,24 @@ struct ConversationView: View {
         }
     }
     
+    private var isShowingError: Binding<Bool> {
+        Binding(
+            get: { viewModel.error != nil },
+            set: { isPresented in
+                if !isPresented {
+                    viewModel.dismissError()
+                }
+            }
+        )
+    }
+    
     private var emptyStateView: some View {
         VStack(spacing: Layout.emptyStateSpacing) {
             Spacer()
             
             Image(systemName: "mic.fill")
                 .font(.system(size: Layout.emptyStateIconSize))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
             
             Text("Press and hold to speak")
                 .font(.title3)
