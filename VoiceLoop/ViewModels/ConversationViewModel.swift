@@ -131,16 +131,8 @@ final class ConversationViewModel {
             
             deleteRecording(url)
                         
-        } catch let error as APIError {
-            errorMessage = error.errorDescription
-            state = .error
-            cleanupRecording()
-        } catch let error as RecordingError {
-            errorMessage = error.errorDescription
-            state = .error
-            cleanupRecording()
         } catch {
-            errorMessage = "Something went wrong. Please try again."
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? "Something went wrong. Please try again."
             state = .error
             cleanupRecording()
         }
