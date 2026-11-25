@@ -91,17 +91,55 @@ struct ConversationViewModelTests {
         #expect(synthesizer.spokenTexts == ["Hello! How can I help?"])
     }
 
-    @Test("A failed transcription shows an error")
-    func failedTranscription() async {
+    @Test("A failed transcription keeps the recording and Try Again transcribes it")
+    func retryTranscription() async {
         transcriber.result = .failure(TestError())
         let viewModel = makeViewModel()
-
         viewModel.startRecording()
         await viewModel.stopRecording()
 
         #expect(viewModel.state == .error)
-        #expect(viewModel.errorMessage != nil)
-        #expect(viewModel.messages.isEmpty)
+        #expect(viewModel.canRetry)
+        #expect(recorder.deletedURLs.isEmpty)
+
+        transcriber.result = .success("Hello")
+        await viewModel.retry()
+
+        #expect(transcriber.transcribedURLs == [recorder.recordingFile, recorder.recordingFile])
+        #expect(viewModel.messages.map(\.role) == [.user, .assistant])
+        #expect(recorder.deletedURLs == [recorder.recordingFile])
+    }
+
+    @Test("A failed reply offers Try Again, which re-sends without duplicating the user message")
+    func retryReply() async {
+        chat.result = .failure(TestError())
+        let viewModel = makeViewModel()
+        viewModel.startRecording()
+        await viewModel.stopRecording()
+
+        #expect(viewModel.state == .error)
+        #expect(viewModel.canRetry)
+
+        chat.result = .success("Hi there")
+        await viewModel.retry()
+
+        #expect(transcriber.transcribedURLs.count == 1)
+        #expect(chat.receivedHistories.count == 2)
+        #expect(viewModel.messages.map(\.role) == [.user, .assistant])
+    }
+
+    @Test("Dismissing an error deletes the kept recording and returns to idle")
+    func dismissingError() async {
+        transcriber.result = .failure(TestError())
+        let viewModel = makeViewModel()
+        viewModel.startRecording()
+        await viewModel.stopRecording()
+
+        viewModel.dismissError()
+
+        #expect(viewModel.state == .idle)
+        #expect(!viewModel.canRetry)
+        #expect(recorder.deletedURLs == [recorder.recordingFile])
     }
 
     @Test("An interruption stops and deletes the recording and shows an error")

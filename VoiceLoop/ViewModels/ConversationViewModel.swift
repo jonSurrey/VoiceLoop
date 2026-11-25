@@ -7,14 +7,20 @@ final class ConversationViewModel {
     var state: ConversationState = .idle
     var errorMessage: String?
     var hasMicrophonePermission: Bool = false
-    var hasRecordingData: Bool = false
+    
+    private static let genericErrorMessage = "Something went wrong. Please try again."
     
     private let recorder: AudioRecording
     private let transcriber: Transcribing
     private let chat: ChatCompleting
     private let synthesizer: SpeechSynthesizing
     
-    private var currentRecordingURL: URL?
+    private var retryStep: RetryStep?
+    
+    private enum RetryStep {
+        case transcribe(URL)
+        case reply
+    }
     
     var statusText: String {
         switch state {
@@ -31,6 +37,10 @@ final class ConversationViewModel {
         case .error:
             return "Error occurred"
         }
+    }
+    
+    var canRetry: Bool {
+        retryStep != nil
     }
     
     var isRecording: Bool {
@@ -82,15 +92,11 @@ final class ConversationViewModel {
         }
         
         do {
-            currentRecordingURL = try recorder.startRecording()
+            try recorder.startRecording()
             state = .recording
             errorMessage = nil
-        } catch let error as RecordingError {
-            errorMessage = error.errorDescription
-            state = .error
         } catch {
-            errorMessage = "Couldn't start recording. Please try again."
-            state = .error
+            fail(with: error)
         }
     }
     
@@ -100,71 +106,76 @@ final class ConversationViewModel {
         }
         
         guard let recordingURL = recorder.stopRecording() else {
-            errorMessage = "Something went wrong. Please try again."
+            errorMessage = Self.genericErrorMessage
             state = .error
             return
         }
         
-        currentRecordingURL = recordingURL
-        hasRecordingData = true
-        
-        await processRecording(at: recordingURL)
-    }
-    
-    private func processRecording(at url: URL) async {
-        do {
-            state = .transcribing
-            let transcribedText = try await transcriber.transcribe(url)
-            
-            let userMessage = Message(role: .user, content: transcribedText)
-            messages.append(userMessage)
-            
-            state = .generating
-            let aiResponse = try await chat.reply(to: messages)
-            
-            let assistantMessage = Message(role: .assistant, content: aiResponse)
-            messages.append(assistantMessage)
-            
-            state = .speaking
-            synthesizer.speak(aiResponse) { [weak self] in
-                Task { @MainActor in
-                    self?.state = .idle
-                }
-            }
-            
-            deleteRecording(url)
-                        
-        } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? "Something went wrong. Please try again."
-            state = .error
-            cleanupRecording()
-        }
-    }
-    
-    private func cleanupRecording() {
-        guard let url = currentRecordingURL else { return }
-        deleteRecording(url)
-    }
-    
-    func deleteRecording(_ url: URL) {
-        recorder.deleteRecording(at: url)
-        hasRecordingData = false
+        await transcribe(recordingURL)
     }
     
     func retry() async {
-        errorMessage = nil
-        
-        guard let url = currentRecordingURL else {
-            state = .idle
+        guard let step = retryStep else {
             return
         }
+        retryStep = nil
+        errorMessage = nil
         
-        await processRecording(at: url)
+        switch step {
+        case .transcribe(let url):
+            await transcribe(url)
+        case .reply:
+            await reply()
+        }
     }
     
     func dismissError() {
+        if case .transcribe(let url) = retryStep {
+            recorder.deleteRecording(at: url)
+        }
+        retryStep = nil
         errorMessage = nil
         state = .idle
+    }
+    
+    private func transcribe(_ recordingURL: URL) async {
+        state = .transcribing
+        let transcript: String
+        do {
+            transcript = try await transcriber.transcribe(recordingURL)
+        } catch {
+            fail(with: error, retry: .transcribe(recordingURL))
+            return
+        }
+        
+        recorder.deleteRecording(at: recordingURL)
+        messages.append(Message(role: .user, content: transcript))
+        await reply()
+    }
+    
+    private func reply() async {
+        state = .generating
+        let answer: String
+        do {
+            answer = try await chat.reply(to: messages)
+        } catch {
+            fail(with: error, retry: .reply)
+            return
+        }
+        
+        messages.append(Message(role: .assistant, content: answer))
+        state = .speaking
+        synthesizer.speak(answer) { [weak self] in
+            Task { @MainActor in
+                self?.state = .idle
+            }
+        }
+    }
+    
+    private func fail(with error: Error, retry step: RetryStep? = nil) {
+        errorMessage = (error as? LocalizedError)?.errorDescription ?? Self.genericErrorMessage
+        retryStep = step
+        state = .error
     }
     
     private func handleInterruption() {

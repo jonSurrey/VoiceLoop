@@ -17,11 +17,10 @@ final class MockAudioRecorder: AudioRecording {
         permission
     }
 
-    func startRecording() throws -> URL {
+    func startRecording() throws {
         if let startError {
             throw startError
         }
-        return recordingFile
     }
 
     func stopRecording() -> URL? {

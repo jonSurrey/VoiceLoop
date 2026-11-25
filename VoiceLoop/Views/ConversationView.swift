@@ -46,7 +46,7 @@ struct ConversationView: View {
                 Button("OK") {
                     viewModel.dismissError()
                 }
-                if viewModel.hasRecordingData {
+                if viewModel.canRetry {
                     Button("Try Again") {
                         Task { await viewModel.retry() }
                     }
