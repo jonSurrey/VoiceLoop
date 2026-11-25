@@ -1,7 +1,7 @@
 import Foundation
 import AVFoundation
 
-final class AudioRecordingService: NSObject, AudioRecordingProtocol {
+final class AudioRecorder: NSObject, AudioRecording {
     var isRecording: Bool {
         audioRecorder?.isRecording ?? false
     }
@@ -118,7 +118,7 @@ enum RecordingError: LocalizedError {
     }
 }
 
-extension AudioRecordingService: AVAudioRecorderDelegate {
+extension AudioRecorder: AVAudioRecorderDelegate {
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
             print("Recording did not finish successfully")

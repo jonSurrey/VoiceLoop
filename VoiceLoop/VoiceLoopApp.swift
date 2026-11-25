@@ -3,10 +3,10 @@ import SwiftUI
 @main
 struct VoiceLoopApp: App {
     @State private var viewModel = ConversationViewModel(
-        audioRecordingService: AudioRecordingService(),
-        transcriptionService: TranscriptionService(),
-        chatService: ChatService(),
-        ttsService: TextToSpeechService()
+        recorder: AudioRecorder(),
+        transcriber: AppleSpeechTranscriber(),
+        chat: OpenAIChatService(),
+        synthesizer: SpeechSynthesizer()
     )
 
     var body: some Scene {

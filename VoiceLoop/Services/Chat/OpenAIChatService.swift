@@ -1,6 +1,6 @@
 import Foundation
 
-final class ChatService: ChatProtocol {
+final class OpenAIChatService: ChatCompleting {
     /// Returns a canned reply so the app works without an OpenAI key or quota.
     static var isDebugMode: Bool = true
     
@@ -18,7 +18,7 @@ final class ChatService: ChatProtocol {
         self.model = model
     }
     
-    func sendMessage(messages: [Message]) async throws -> String {
+    func reply(to messages: [Message]) async throws -> String {
         if Self.isDebugMode {
             try await Task.sleep(nanoseconds: 500_000_000)
             return "This is a mock response for testing. Debug mode is enabled, so no actual API call is being made."
@@ -55,6 +55,6 @@ final class ChatService: ChatProtocol {
     
     func sendMessage(text: String) async throws -> String {
         let message = Message(role: .user, content: text)
-        return try await sendMessage(messages: [message])
+        return try await reply(to: [message])
     }
 }

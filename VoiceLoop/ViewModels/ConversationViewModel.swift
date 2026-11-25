@@ -4,15 +4,15 @@ import Observation
 @Observable
 final class ConversationViewModel {
     var messages: [Message] = []
-    var state: AppState = .idle
+    var state: ConversationState = .idle
     var errorMessage: String?
     var hasMicrophonePermission: Bool = false
     var hasRecordingData: Bool = false
     
-    private let audioRecordingService: AudioRecordingProtocol
-    private let transcriptionService: TranscriptionProtocol
-    private let chatService: ChatProtocol
-    private let ttsService: TextToSpeechProtocol
+    private let recorder: AudioRecording
+    private let transcriber: Transcribing
+    private let chat: ChatCompleting
+    private let synthesizer: SpeechSynthesizing
     
     private var currentRecordingURL: URL?
     
@@ -43,21 +43,21 @@ final class ConversationViewModel {
     }
     
     init(
-        audioRecordingService: AudioRecordingProtocol,
-        transcriptionService: TranscriptionProtocol,
-        chatService: ChatProtocol,
-        ttsService: TextToSpeechProtocol
+        recorder: AudioRecording,
+        transcriber: Transcribing,
+        chat: ChatCompleting,
+        synthesizer: SpeechSynthesizing
     ) {
-        self.audioRecordingService = audioRecordingService
-        self.transcriptionService = transcriptionService
-        self.chatService = chatService
-        self.ttsService = ttsService
+        self.recorder = recorder
+        self.transcriber = transcriber
+        self.chat = chat
+        self.synthesizer = synthesizer
         
-        self.hasMicrophonePermission = audioRecordingService.checkPermission()
+        self.hasMicrophonePermission = recorder.checkPermission()
     }
     
     func requestMicrophonePermission() async {
-        let granted = await audioRecordingService.requestPermission()
+        let granted = await recorder.requestPermission()
         hasMicrophonePermission = granted
         
         guard granted else {
@@ -79,7 +79,7 @@ final class ConversationViewModel {
         }
         
         do {
-            currentRecordingURL = try audioRecordingService.startRecording()
+            currentRecordingURL = try recorder.startRecording()
             state = .recording
             errorMessage = nil
         } catch let error as RecordingError {
@@ -96,7 +96,7 @@ final class ConversationViewModel {
             return
         }
         
-        guard let recordingURL = audioRecordingService.stopRecording() else {
+        guard let recordingURL = recorder.stopRecording() else {
             errorMessage = "Something went wrong. Please try again."
             state = .error
             return
@@ -113,19 +113,19 @@ final class ConversationViewModel {
     private func processRecording(at url: URL) async {
         do {
             state = .transcribing
-            let transcribedText = try await transcriptionService.transcribe(audioURL: url)
+            let transcribedText = try await transcriber.transcribe(url)
             
             let userMessage = Message(role: .user, content: transcribedText)
             messages.append(userMessage)
             
             state = .generating
-            let aiResponse = try await chatService.sendMessage(messages: messages)
+            let aiResponse = try await chat.reply(to: messages)
             
             let assistantMessage = Message(role: .assistant, content: aiResponse)
             messages.append(assistantMessage)
             
             state = .speaking
-            ttsService.speak(aiResponse) { [weak self] in
+            synthesizer.speak(aiResponse) { [weak self] in
                 Task { @MainActor in
                     self?.state = .idle
                 }
@@ -154,7 +154,7 @@ final class ConversationViewModel {
     }
     
     func deleteRecording(_ url: URL) {
-        audioRecordingService.deleteRecording(at: url)
+        recorder.deleteRecording(at: url)
         hasRecordingData = false
     }
     
@@ -177,7 +177,7 @@ final class ConversationViewModel {
     }
     
     func stopSpeaking() {
-        ttsService.stop()
+        synthesizer.stop()
         state = .idle
     }
     
@@ -185,6 +185,6 @@ final class ConversationViewModel {
         messages.removeAll()
         state = .idle
         errorMessage = nil
-        ttsService.stop()
+        synthesizer.stop()
     }
 }

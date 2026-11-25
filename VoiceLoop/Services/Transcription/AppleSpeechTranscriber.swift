@@ -1,14 +1,14 @@
 import Foundation
 import Speech
 
-final class TranscriptionService: TranscriptionProtocol {
+final class AppleSpeechTranscriber: Transcribing {
     private let recognizer: SFSpeechRecognizer?
     
     init(locale: Locale = Locale(identifier: "en-US")) {
         self.recognizer = SFSpeechRecognizer(locale: locale)
     }
     
-    func transcribe(audioURL: URL) async throws -> String {
+    func transcribe(_ audioURL: URL) async throws -> String {
         guard FileManager.default.fileExists(atPath: audioURL.path) else {
             throw APIError.serverError("Audio file not found")
         }

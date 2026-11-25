@@ -3,23 +3,23 @@ import XCTest
 
 final class ConversationViewModelTests: XCTestCase {
     var viewModel: ConversationViewModel!
-    var mockAudio: MockAudioRecordingService!
-    var mockTranscription: MockTranscriptionService!
-    var mockChat: MockChatService!
-    var mockTTS: MockTextToSpeechService!
+    var recorder: MockAudioRecorder!
+    var transcriber: MockTranscriber!
+    var chat: MockChat!
+    var synthesizer: MockSpeechSynthesizer!
     
     override func setUp() {
         super.setUp()
-        mockAudio = MockAudioRecordingService()
-        mockTranscription = MockTranscriptionService()
-        mockChat = MockChatService()
-        mockTTS = MockTextToSpeechService()
+        recorder = MockAudioRecorder()
+        transcriber = MockTranscriber()
+        chat = MockChat()
+        synthesizer = MockSpeechSynthesizer()
         
         viewModel = ConversationViewModel(
-            audioRecordingService: mockAudio,
-            transcriptionService: mockTranscription,
-            chatService: mockChat,
-            ttsService: mockTTS
+            recorder: recorder,
+            transcriber: transcriber,
+            chat: chat,
+            synthesizer: synthesizer
         )
     }
     
@@ -30,70 +30,70 @@ final class ConversationViewModelTests: XCTestCase {
     }
     
     func testCanRecordWhenPermissionGranted() {
-        mockAudio.hasPermission = true
+        recorder.hasPermission = true
         viewModel = ConversationViewModel(
-            audioRecordingService: mockAudio,
-            transcriptionService: mockTranscription,
-            chatService: mockChat,
-            ttsService: mockTTS
+            recorder: recorder,
+            transcriber: transcriber,
+            chat: chat,
+            synthesizer: synthesizer
         )
         
         XCTAssertTrue(viewModel.canRecord)
     }
     
     func testCannotRecordWithoutPermission() {
-        mockAudio.hasPermission = false
+        recorder.hasPermission = false
         viewModel = ConversationViewModel(
-            audioRecordingService: mockAudio,
-            transcriptionService: mockTranscription,
-            chatService: mockChat,
-            ttsService: mockTTS
+            recorder: recorder,
+            transcriber: transcriber,
+            chat: chat,
+            synthesizer: synthesizer
         )
         
         XCTAssertFalse(viewModel.canRecord)
     }
     
     func testStartRecordingUpdatesState() throws {
-        mockAudio.hasPermission = true
+        recorder.hasPermission = true
         viewModel = ConversationViewModel(
-            audioRecordingService: mockAudio,
-            transcriptionService: mockTranscription,
-            chatService: mockChat,
-            ttsService: mockTTS
+            recorder: recorder,
+            transcriber: transcriber,
+            chat: chat,
+            synthesizer: synthesizer
         )
         
         viewModel.startRecording()
         
         XCTAssertEqual(viewModel.state, .recording)
-        XCTAssertTrue(mockAudio.startRecordingCalled)
+        XCTAssertTrue(recorder.startRecordingCalled)
         XCTAssertTrue(viewModel.isRecording)
     }
     
     func testStopRecordingTriggersProcessing() {
-        mockAudio.hasPermission = true
+        recorder.hasPermission = true
         viewModel = ConversationViewModel(
-            audioRecordingService: mockAudio,
-            transcriptionService: mockTranscription,
-            chatService: mockChat,
-            ttsService: mockTTS
+            recorder: recorder,
+            transcriber: transcriber,
+            chat: chat,
+            synthesizer: synthesizer
         )
         
         viewModel.startRecording()
         viewModel.stopRecording()
         
-        XCTAssertTrue(mockAudio.stopRecordingCalled)
+        XCTAssertTrue(recorder.stopRecordingCalled)
     }
     
     func testFullConversationFlow() async throws {
-        mockAudio.hasPermission = true
-        mockTranscription.mockTranscription = "Hello AI"
-        mockChat.mockResponse = "Hello! How can I help?"
+        recorder.hasPermission = true
+        transcriber.transcript = "Hello AI"
+        chat.mockResponse = "Hello! How can I help?"
         
         viewModel = ConversationViewModel(
-            audioRecordingService: mockAudio,
-            transcriptionService: mockTranscription,
-            chatService: mockChat,
-            ttsService: mockTTS
+            recorder: recorder,
+            transcriber: transcriber,
+            chat: chat,
+            synthesizer: synthesizer
         )
         
         viewModel.startRecording()
@@ -106,18 +106,18 @@ final class ConversationViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.messages[0].role, .user)
         XCTAssertEqual(viewModel.messages[1].content, "Hello! How can I help?")
         XCTAssertEqual(viewModel.messages[1].role, .assistant)
-        XCTAssertTrue(mockTTS.speakCalled)
+        XCTAssertTrue(synthesizer.speakCalled)
     }
     
     func testErrorHandlingOnTranscriptionFails() async throws {
-        mockAudio.hasPermission = true
-        mockTranscription.shouldThrowError = true
+        recorder.hasPermission = true
+        transcriber.shouldThrowError = true
         
         viewModel = ConversationViewModel(
-            audioRecordingService: mockAudio,
-            transcriptionService: mockTranscription,
-            chatService: mockChat,
-            ttsService: mockTTS
+            recorder: recorder,
+            transcriber: transcriber,
+            chat: chat,
+            synthesizer: synthesizer
         )
         
         viewModel.startRecording()
@@ -132,26 +132,26 @@ final class ConversationViewModelTests: XCTestCase {
     func testStopSpeakingCallsTTSStop() {
         viewModel.stopSpeaking()
         
-        XCTAssertTrue(mockTTS.stopCalled)
+        XCTAssertTrue(synthesizer.stopCalled)
         XCTAssertEqual(viewModel.state, .idle)
     }
     
     func testTTSCompletionTransitionsToIdle() {
         let expectation = XCTestExpectation(description: "TTS completion")
         
-        mockTTS.onSpeak = { completion in
+        synthesizer.onSpeak = { completion in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 completion?()
                 expectation.fulfill()
             }
         }
         
-        mockTTS.speak("Test", completion: nil)
+        synthesizer.speak("Test", completion: nil)
         wait(for: [expectation], timeout: 1.0)
     }
 }
 
-final class MockAudioRecordingService: AudioRecordingProtocol {
+final class MockAudioRecorder: AudioRecording {
     var hasPermission = true
     var startRecordingCalled = false
     var stopRecordingCalled = false
@@ -180,23 +180,23 @@ final class MockAudioRecordingService: AudioRecordingProtocol {
     func deleteRecording(at url: URL) {}
 }
 
-final class MockTranscriptionService: TranscriptionProtocol {
-    var mockTranscription = ""
+final class MockTranscriber: Transcribing {
+    var transcript = ""
     var shouldThrowError = false
     
-    func transcribe(audioURL: URL) async throws -> String {
+    func transcribe(_ audioURL: URL) async throws -> String {
         if shouldThrowError {
             throw APIError.serverError("Transcription failed")
         }
-        return mockTranscription
+        return transcript
     }
 }
 
-final class MockChatService: ChatProtocol {
+final class MockChat: ChatCompleting {
     var mockResponse = ""
     var shouldThrowError = false
     
-    func sendMessage(messages: [Message]) async throws -> String {
+    func reply(to messages: [Message]) async throws -> String {
         if shouldThrowError {
             throw APIError.serverError("Chat failed")
         }
@@ -204,11 +204,11 @@ final class MockChatService: ChatProtocol {
     }
     
     func sendMessage(text: String) async throws -> String {
-        return try await sendMessage(messages: [])
+        return try await reply(to: [])
     }
 }
 
-final class MockTextToSpeechService: TextToSpeechProtocol {
+final class MockSpeechSynthesizer: SpeechSynthesizing {
     var speakCalled = false
     var stopCalled = false
     var onSpeak: (((() -> Void)?) -> Void)?

@@ -1,7 +1,7 @@
 import Foundation
 import AVFoundation
 
-final class TextToSpeechService: NSObject, TextToSpeechProtocol {
+final class SpeechSynthesizer: NSObject, SpeechSynthesizing {
     private let synthesizer: AVSpeechSynthesizer
     private var onComplete: (() -> Void)?
     
@@ -47,7 +47,7 @@ final class TextToSpeechService: NSObject, TextToSpeechProtocol {
     }
 }
 
-extension TextToSpeechService: AVSpeechSynthesizerDelegate {
+extension SpeechSynthesizer: AVSpeechSynthesizerDelegate {
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         onComplete?()
         onComplete = nil

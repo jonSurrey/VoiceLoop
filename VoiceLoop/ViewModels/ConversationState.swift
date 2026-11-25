@@ -1,6 +1,6 @@
 import Foundation
 
-enum AppState {
+enum ConversationState {
     case idle
     case recording
     case transcribing
