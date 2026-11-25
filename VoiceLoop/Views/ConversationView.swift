@@ -41,7 +41,7 @@ struct ConversationView: View {
                     }
                 }
             }
-            .alert("Oops!", isPresented: .constant(viewModel.errorMessage != nil)) {
+            .alert("Oops!", isPresented: isShowingError) {
                 Button("OK") {
                     viewModel.dismissError()
                 }
@@ -62,6 +62,17 @@ struct ConversationView: View {
                 }
             }
         }
+    }
+    
+    private var isShowingError: Binding<Bool> {
+        Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    viewModel.errorMessage = nil
+                }
+            }
+        )
     }
     
     private var emptyStateView: some View {
