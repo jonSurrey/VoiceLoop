@@ -89,6 +89,20 @@ struct ConversationViewModelTests {
         #expect(viewModel.messages.map(\.role) == [.user, .assistant])
         #expect(viewModel.messages.map(\.content) == ["Hello AI", "Hello! How can I help?"])
         #expect(synthesizer.spokenTexts == ["Hello! How can I help?"])
+        #expect(viewModel.state == .idle)
+    }
+
+    @Test("Recording while the reply is spoken stops speech and keeps recording")
+    func recordingWhileSpeaking() async {
+        let viewModel = makeViewModel()
+        synthesizer.onSpeak = { viewModel.startRecording() }
+        viewModel.startRecording()
+        let stopsBeforeTurn = synthesizer.stopCount
+
+        await viewModel.stopRecording()
+
+        #expect(synthesizer.stopCount == stopsBeforeTurn + 1)
+        #expect(viewModel.state == .recording)
     }
 
     @Test("A failed transcription keeps the recording and Try Again transcribes it")
@@ -154,13 +168,16 @@ struct ConversationViewModelTests {
         #expect(recorder.deletedURLs == [recorder.recordingFile])
     }
 
-    @Test("Stopping speech stops the synthesizer and returns to idle")
-    func stoppingSpeech() {
+    @Test("Stopping speech returns to idle and the end of speech changes nothing")
+    func stoppingSpeech() async {
         let viewModel = makeViewModel()
+        synthesizer.onSpeak = { viewModel.stopSpeaking() }
+        viewModel.startRecording()
+        let stopsBeforeTurn = synthesizer.stopCount
 
-        viewModel.stopSpeaking()
+        await viewModel.stopRecording()
 
-        #expect(synthesizer.stopCount == 1)
+        #expect(synthesizer.stopCount == stopsBeforeTurn + 1)
         #expect(viewModel.state == .idle)
     }
 
@@ -170,10 +187,12 @@ struct ConversationViewModelTests {
         viewModel.startRecording()
         await viewModel.stopRecording()
 
+        let stopsBeforeClearing = synthesizer.stopCount
+
         viewModel.clearConversation()
 
         #expect(viewModel.messages.isEmpty)
         #expect(viewModel.state == .idle)
-        #expect(synthesizer.stopCount == 1)
+        #expect(synthesizer.stopCount == stopsBeforeClearing + 1)
     }
 }

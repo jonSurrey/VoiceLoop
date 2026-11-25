@@ -1,6 +1,4 @@
-import Foundation
-
 protocol SpeechSynthesizing {
-    func speak(_ text: String, completion: (() -> Void)?)
+    func speak(_ text: String) async
     func stop()
 }

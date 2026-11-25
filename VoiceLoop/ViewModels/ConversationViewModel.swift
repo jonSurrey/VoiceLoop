@@ -91,6 +91,7 @@ final class ConversationViewModel {
             return
         }
         
+        synthesizer.stop()
         do {
             try recorder.startRecording()
             state = .recording
@@ -165,10 +166,10 @@ final class ConversationViewModel {
         
         messages.append(Message(role: .assistant, content: answer))
         state = .speaking
-        synthesizer.speak(answer) { [weak self] in
-            Task { @MainActor in
-                self?.state = .idle
-            }
+        await synthesizer.speak(answer)
+        // The user may have stopped speech or started a new recording meanwhile.
+        if state == .speaking {
+            state = .idle
         }
     }
     
