@@ -27,6 +27,8 @@
 		136949D82EBA32EC001C3ACE /* Luzia-Home-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Luzia-Home-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		136949E52EBA32ED001C3ACE /* Luzia-Home-TestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Luzia-Home-TestTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		136949EF2EBA32ED001C3ACE /* Luzia-Home-TestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Luzia-Home-TestUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1C0F1E02EC0000000000001 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
+		A1C0F1E02EC0000000000002 /* Local.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -91,8 +93,18 @@
 				136949DA2EBA32EC001C3ACE /* Luzia-Home-Test */,
 				136949E82EBA32ED001C3ACE /* Luzia-Home-TestTests */,
 				136949F22EBA32ED001C3ACE /* Luzia-Home-TestUITests */,
+				A1C0F1E02EC0000000000003 /* Config */,
 				136949D92EBA32EC001C3ACE /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		A1C0F1E02EC0000000000003 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				A1C0F1E02EC0000000000001 /* App.xcconfig */,
+				A1C0F1E02EC0000000000002 /* Local.example.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		136949D92EBA32EC001C3ACE /* Products */ = {
@@ -284,6 +296,7 @@
 /* Begin XCBuildConfiguration section */
 		136949F72EBA32EE001C3ACE /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1C0F1E02EC0000000000001 /* App.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -347,6 +360,7 @@
 		};
 		136949F82EBA32EE001C3ACE /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1C0F1E02EC0000000000001 /* App.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
