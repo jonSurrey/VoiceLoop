@@ -12,52 +12,52 @@
 			containerPortal = 136949D02EBA32EC001C3ACE /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 136949D72EBA32EC001C3ACE;
-			remoteInfo = "Luzia-Home-Test";
+			remoteInfo = "VoiceLoop";
 		};
 		136949F02EBA32ED001C3ACE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 136949D02EBA32EC001C3ACE /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 136949D72EBA32EC001C3ACE;
-			remoteInfo = "Luzia-Home-Test";
+			remoteInfo = "VoiceLoop";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		136949D82EBA32EC001C3ACE /* Luzia-Home-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Luzia-Home-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		136949E52EBA32ED001C3ACE /* Luzia-Home-TestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Luzia-Home-TestTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		136949EF2EBA32ED001C3ACE /* Luzia-Home-TestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Luzia-Home-TestUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		136949D82EBA32EC001C3ACE /* VoiceLoop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VoiceLoop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		136949E52EBA32ED001C3ACE /* VoiceLoopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoiceLoopTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		136949EF2EBA32ED001C3ACE /* VoiceLoopUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoiceLoopUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1C0F1E02EC0000000000001 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
 		A1C0F1E02EC0000000000002 /* Local.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		74647A952EBC0ECF006AD000 /* Exceptions for "Luzia-Home-Test" folder in "Luzia-Home-Test" target */ = {
+		74647A952EBC0ECF006AD000 /* Exceptions for "VoiceLoop" folder in "VoiceLoop" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 136949D72EBA32EC001C3ACE /* Luzia-Home-Test */;
+			target = 136949D72EBA32EC001C3ACE /* VoiceLoop */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		136949DA2EBA32EC001C3ACE /* Luzia-Home-Test */ = {
+		136949DA2EBA32EC001C3ACE /* VoiceLoop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				74647A952EBC0ECF006AD000 /* Exceptions for "Luzia-Home-Test" folder in "Luzia-Home-Test" target */,
+				74647A952EBC0ECF006AD000 /* Exceptions for "VoiceLoop" folder in "VoiceLoop" target */,
 			);
-			path = "Luzia-Home-Test";
+			path = "VoiceLoop";
 			sourceTree = "<group>";
 		};
-		136949E82EBA32ED001C3ACE /* Luzia-Home-TestTests */ = {
+		136949E82EBA32ED001C3ACE /* VoiceLoopTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Luzia-Home-TestTests";
+			path = "VoiceLoopTests";
 			sourceTree = "<group>";
 		};
-		136949F22EBA32ED001C3ACE /* Luzia-Home-TestUITests */ = {
+		136949F22EBA32ED001C3ACE /* VoiceLoopUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Luzia-Home-TestUITests";
+			path = "VoiceLoopUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -90,9 +90,9 @@
 		136949CF2EBA32EC001C3ACE = {
 			isa = PBXGroup;
 			children = (
-				136949DA2EBA32EC001C3ACE /* Luzia-Home-Test */,
-				136949E82EBA32ED001C3ACE /* Luzia-Home-TestTests */,
-				136949F22EBA32ED001C3ACE /* Luzia-Home-TestUITests */,
+				136949DA2EBA32EC001C3ACE /* VoiceLoop */,
+				136949E82EBA32ED001C3ACE /* VoiceLoopTests */,
+				136949F22EBA32ED001C3ACE /* VoiceLoopUITests */,
 				A1C0F1E02EC0000000000003 /* Config */,
 				136949D92EBA32EC001C3ACE /* Products */,
 			);
@@ -110,9 +110,9 @@
 		136949D92EBA32EC001C3ACE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				136949D82EBA32EC001C3ACE /* Luzia-Home-Test.app */,
-				136949E52EBA32ED001C3ACE /* Luzia-Home-TestTests.xctest */,
-				136949EF2EBA32ED001C3ACE /* Luzia-Home-TestUITests.xctest */,
+				136949D82EBA32EC001C3ACE /* VoiceLoop.app */,
+				136949E52EBA32ED001C3ACE /* VoiceLoopTests.xctest */,
+				136949EF2EBA32ED001C3ACE /* VoiceLoopUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,9 +120,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		136949D72EBA32EC001C3ACE /* Luzia-Home-Test */ = {
+		136949D72EBA32EC001C3ACE /* VoiceLoop */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 136949F92EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "Luzia-Home-Test" */;
+			buildConfigurationList = 136949F92EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "VoiceLoop" */;
 			buildPhases = (
 				136949D42EBA32EC001C3ACE /* Sources */,
 				136949D52EBA32EC001C3ACE /* Frameworks */,
@@ -133,18 +133,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				136949DA2EBA32EC001C3ACE /* Luzia-Home-Test */,
+				136949DA2EBA32EC001C3ACE /* VoiceLoop */,
 			);
-			name = "Luzia-Home-Test";
+			name = "VoiceLoop";
 			packageProductDependencies = (
 			);
-			productName = "Luzia-Home-Test";
-			productReference = 136949D82EBA32EC001C3ACE /* Luzia-Home-Test.app */;
+			productName = "VoiceLoop";
+			productReference = 136949D82EBA32EC001C3ACE /* VoiceLoop.app */;
 			productType = "com.apple.product-type.application";
 		};
-		136949E42EBA32ED001C3ACE /* Luzia-Home-TestTests */ = {
+		136949E42EBA32ED001C3ACE /* VoiceLoopTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 136949FC2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "Luzia-Home-TestTests" */;
+			buildConfigurationList = 136949FC2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "VoiceLoopTests" */;
 			buildPhases = (
 				136949E12EBA32ED001C3ACE /* Sources */,
 				136949E22EBA32ED001C3ACE /* Frameworks */,
@@ -156,18 +156,18 @@
 				136949E72EBA32ED001C3ACE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				136949E82EBA32ED001C3ACE /* Luzia-Home-TestTests */,
+				136949E82EBA32ED001C3ACE /* VoiceLoopTests */,
 			);
-			name = "Luzia-Home-TestTests";
+			name = "VoiceLoopTests";
 			packageProductDependencies = (
 			);
-			productName = "Luzia-Home-TestTests";
-			productReference = 136949E52EBA32ED001C3ACE /* Luzia-Home-TestTests.xctest */;
+			productName = "VoiceLoopTests";
+			productReference = 136949E52EBA32ED001C3ACE /* VoiceLoopTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		136949EE2EBA32ED001C3ACE /* Luzia-Home-TestUITests */ = {
+		136949EE2EBA32ED001C3ACE /* VoiceLoopUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 136949FF2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "Luzia-Home-TestUITests" */;
+			buildConfigurationList = 136949FF2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "VoiceLoopUITests" */;
 			buildPhases = (
 				136949EB2EBA32ED001C3ACE /* Sources */,
 				136949EC2EBA32ED001C3ACE /* Frameworks */,
@@ -179,13 +179,13 @@
 				136949F12EBA32ED001C3ACE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				136949F22EBA32ED001C3ACE /* Luzia-Home-TestUITests */,
+				136949F22EBA32ED001C3ACE /* VoiceLoopUITests */,
 			);
-			name = "Luzia-Home-TestUITests";
+			name = "VoiceLoopUITests";
 			packageProductDependencies = (
 			);
-			productName = "Luzia-Home-TestUITests";
-			productReference = 136949EF2EBA32ED001C3ACE /* Luzia-Home-TestUITests.xctest */;
+			productName = "VoiceLoopUITests";
+			productReference = 136949EF2EBA32ED001C3ACE /* VoiceLoopUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -211,7 +211,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 136949D32EBA32EC001C3ACE /* Build configuration list for PBXProject "Luzia-Home-Test" */;
+			buildConfigurationList = 136949D32EBA32EC001C3ACE /* Build configuration list for PBXProject "VoiceLoop" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -225,9 +225,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				136949D72EBA32EC001C3ACE /* Luzia-Home-Test */,
-				136949E42EBA32ED001C3ACE /* Luzia-Home-TestTests */,
-				136949EE2EBA32ED001C3ACE /* Luzia-Home-TestUITests */,
+				136949D72EBA32EC001C3ACE /* VoiceLoop */,
+				136949E42EBA32ED001C3ACE /* VoiceLoopTests */,
+				136949EE2EBA32ED001C3ACE /* VoiceLoopUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -283,12 +283,12 @@
 /* Begin PBXTargetDependency section */
 		136949E72EBA32ED001C3ACE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 136949D72EBA32EC001C3ACE /* Luzia-Home-Test */;
+			target = 136949D72EBA32EC001C3ACE /* VoiceLoop */;
 			targetProxy = 136949E62EBA32ED001C3ACE /* PBXContainerItemProxy */;
 		};
 		136949F12EBA32ED001C3ACE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 136949D72EBA32EC001C3ACE /* Luzia-Home-Test */;
+			target = 136949D72EBA32EC001C3ACE /* VoiceLoop */;
 			targetProxy = 136949F02EBA32ED001C3ACE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -425,7 +425,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Luzia-Home-Test/Info.plist";
+				INFOPLIST_FILE = "VoiceLoop/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -436,7 +436,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.Luzia-Home-Test";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoop";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -455,7 +455,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Luzia-Home-Test/Info.plist";
+				INFOPLIST_FILE = "VoiceLoop/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -466,7 +466,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.Luzia-Home-Test";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoop";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -485,13 +485,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.Luzia-Home-TestTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoopTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Luzia-Home-Test.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Luzia-Home-Test";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceLoop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VoiceLoop";
 			};
 			name = Debug;
 		};
@@ -505,13 +505,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.Luzia-Home-TestTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoopTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Luzia-Home-Test.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Luzia-Home-Test";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceLoop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VoiceLoop";
 			};
 			name = Release;
 		};
@@ -522,12 +522,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.Luzia-Home-TestUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoopUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "Luzia-Home-Test";
+				TEST_TARGET_NAME = "VoiceLoop";
 			};
 			name = Debug;
 		};
@@ -538,19 +538,19 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.Luzia-Home-TestUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoopUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "Luzia-Home-Test";
+				TEST_TARGET_NAME = "VoiceLoop";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		136949D32EBA32EC001C3ACE /* Build configuration list for PBXProject "Luzia-Home-Test" */ = {
+		136949D32EBA32EC001C3ACE /* Build configuration list for PBXProject "VoiceLoop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				136949F72EBA32EE001C3ACE /* Debug */,
@@ -559,7 +559,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		136949F92EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "Luzia-Home-Test" */ = {
+		136949F92EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "VoiceLoop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				136949FA2EBA32EE001C3ACE /* Debug */,
@@ -568,7 +568,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		136949FC2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "Luzia-Home-TestTests" */ = {
+		136949FC2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "VoiceLoopTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				136949FD2EBA32EE001C3ACE /* Debug */,
@@ -577,7 +577,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		136949FF2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "Luzia-Home-TestUITests" */ = {
+		136949FF2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "VoiceLoopUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13694A002EBA32EE001C3ACE /* Debug */,

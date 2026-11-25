@@ -47,7 +47,7 @@ Each service does one thing and talks to the network layer through protocols, so
 ## Project Layout
 
 ```
-Luzia-Home-Test/
+VoiceLoop/
 ├── Models/
 ├── Services/
 ├── ViewModels/

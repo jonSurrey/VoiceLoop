@@ -1,5 +1,5 @@
 import XCTest
-@testable import Luzia_Home_Test
+@testable import VoiceLoop
 
 @MainActor
 final class ConversationViewModelTests: XCTestCase {
