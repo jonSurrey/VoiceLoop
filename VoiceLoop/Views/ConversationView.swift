@@ -22,7 +22,7 @@ struct ConversationView: View {
                             ProgressView()
                                 .scaleEffect(Layout.titleProgressScale)
                         }
-                        Text(viewModel.state == .idle ? "Voice Assistant" : viewModel.statusText)
+                        Text(viewModel.state == .idle ? "VoiceLoop" : viewModel.statusText)
                             .font(.headline)
                     }
                 }
