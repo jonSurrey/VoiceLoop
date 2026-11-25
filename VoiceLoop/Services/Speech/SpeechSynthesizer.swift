@@ -1,23 +1,15 @@
 import Foundation
 import AVFoundation
 
-@MainActor
-final class TextToSpeechService: NSObject, TextToSpeechProtocol {
-    
-    // MARK: - Properties
-    
+final class SpeechSynthesizer: NSObject, SpeechSynthesizing {
     private let synthesizer: AVSpeechSynthesizer
     private var onComplete: (() -> Void)?
-    
-    // MARK: - Initialization
     
     override init() {
         self.synthesizer = AVSpeechSynthesizer()
         super.init()
         self.synthesizer.delegate = self
     }
-    
-    // MARK: - Speech Control
     
     func speak(_ text: String, completion: (() -> Void)? = nil) {
         if synthesizer.isSpeaking {
@@ -27,24 +19,12 @@ final class TextToSpeechService: NSObject, TextToSpeechProtocol {
         self.onComplete = completion
         let utterance = AVSpeechUtterance(string: text)
         
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate // Normal speed
-        utterance.pitchMultiplier = 1.0 // Normal pitch
-        utterance.volume = 1.0 // Full volume
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        utterance.pitchMultiplier = 1.0
+        utterance.volume = 1.0
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         
         synthesizer.speak(utterance)
-    }
-    
-    func pause() {
-        if synthesizer.isSpeaking {
-            synthesizer.pauseSpeaking(at: .immediate)
-        }
-    }
-    
-    func resume() {
-        if synthesizer.isPaused {
-            synthesizer.continueSpeaking()
-        }
     }
     
     func stop() {
@@ -55,9 +35,7 @@ final class TextToSpeechService: NSObject, TextToSpeechProtocol {
     }
 }
 
-// MARK: - AVSpeechSynthesizerDelegate
-
-extension TextToSpeechService: AVSpeechSynthesizerDelegate {
+extension SpeechSynthesizer: AVSpeechSynthesizerDelegate {
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         onComplete?()
         onComplete = nil
@@ -67,5 +45,3 @@ extension TextToSpeechService: AVSpeechSynthesizerDelegate {
         onComplete = nil
     }
 }
-
-

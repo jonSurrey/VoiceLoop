@@ -1,18 +1,12 @@
 import Foundation
 
-final class ChatService: ChatProtocol {
-    
-    // MARK: - Debug
-    
+final class OpenAIChatService: ChatCompleting {
+    /// Returns a canned reply so the app works without an OpenAI key or quota.
     static var isDebugMode: Bool = true
-    
-    // MARK: - Properties
     
     private let apiClient: APIClient
     private let endpoint: String
     private let model: String
-    
-    // MARK: - Initialization
     
     init(
         apiKey: String = APIConfig.openAIAPIKey,
@@ -24,19 +18,12 @@ final class ChatService: ChatProtocol {
         self.model = model
     }
     
-    // MARK: - Chat Completion
-    
-    func sendMessage(messages: [Message]) async throws -> String {
-        // Return mock response in debug mode
-        //
-        // We use this mock because the API is returning 
-        // error 429: "You exceeded your current quota, please check your plan and billing details".
+    func reply(to messages: [Message]) async throws -> String {
         if Self.isDebugMode {
-            try await Task.sleep(nanoseconds: 500_000_000) // Simulate 0.5s delay
+            try await Task.sleep(nanoseconds: 500_000_000)
             return "This is a mock response for testing. Debug mode is enabled, so no actual API call is being made."
         }
         
-        // Prepare request body
         let apiMessages = messages.map { message in
             ChatCompletionRequest.ChatMessage(
                 role: message.role.rawValue,
@@ -65,11 +52,4 @@ final class ChatService: ChatProtocol {
         
         return firstChoice.message.content
     }
-    
-    func sendMessage(text: String) async throws -> String {
-        let message = Message(role: .user, content: text)
-        return try await sendMessage(messages: [message])
-    }
 }
-
-

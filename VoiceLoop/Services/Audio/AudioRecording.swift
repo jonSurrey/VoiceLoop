@@ -1,9 +1,7 @@
 import Foundation
 import AVFoundation
 
-protocol AudioRecordingProtocol {
-    var isRecording: Bool { get }
-    
+protocol AudioRecording {
     func requestPermission() async -> Bool
     func checkPermission() -> Bool
     func startRecording() throws -> URL

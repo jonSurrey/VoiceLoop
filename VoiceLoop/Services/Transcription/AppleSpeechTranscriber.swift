@@ -1,21 +1,14 @@
 import Foundation
 import Speech
 
-final class TranscriptionService: TranscriptionProtocol {
-    
-    // MARK: - Properties
-    
+final class AppleSpeechTranscriber: Transcribing {
     private let recognizer: SFSpeechRecognizer?
-    
-    // MARK: - Initialization
     
     init(locale: Locale = Locale(identifier: "en-US")) {
         self.recognizer = SFSpeechRecognizer(locale: locale)
     }
     
-    // MARK: - Transcription
-    
-    func transcribe(audioURL: URL) async throws -> String {
+    func transcribe(_ audioURL: URL) async throws -> String {
         guard FileManager.default.fileExists(atPath: audioURL.path) else {
             throw APIError.serverError("Audio file not found")
         }
@@ -59,8 +52,6 @@ final class TranscriptionService: TranscriptionProtocol {
         }
     }
     
-    // MARK: - Permission
-    
     private func requestPermission() async -> Bool {
         await withCheckedContinuation { continuation in
             SFSpeechRecognizer.requestAuthorization { status in
@@ -69,5 +60,3 @@ final class TranscriptionService: TranscriptionProtocol {
         }
     }
 }
-
-

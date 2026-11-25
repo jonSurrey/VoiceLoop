@@ -1,6 +1,6 @@
 import Foundation
 
-enum AppState {
+enum ConversationState {
     case idle
     case recording
     case transcribing
@@ -14,15 +14,6 @@ enum AppState {
     
     var canStopRecording: Bool {
         self == .recording
-    }
-    
-    var isProcessing: Bool {
-        switch self {
-        case .transcribing, .generating, .speaking:
-            return true
-        default:
-            return false
-        }
     }
 }
 

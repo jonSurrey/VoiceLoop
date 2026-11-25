@@ -1,11 +1,8 @@
 import Foundation
 import AVFoundation
 
-final class AudioRecordingService: NSObject, AudioRecordingProtocol {
-    
-    // MARK: - Properties
-    
-    var isRecording: Bool {
+final class AudioRecorder: NSObject, AudioRecording {
+    private var isRecording: Bool {
         audioRecorder?.isRecording ?? false
     }
     
@@ -13,15 +10,11 @@ final class AudioRecordingService: NSObject, AudioRecordingProtocol {
     private var audioSession: AVAudioSession
     private var currentRecordingURL: URL?
     
-    // MARK: - Initialization
-    
     override init() {
         self.audioSession = .sharedInstance()
         super.init()
         setupAudioSession()
     }
-    
-    // MARK: - Audio Session Setup
     
     private func setupAudioSession() {
         do {
@@ -39,8 +32,6 @@ final class AudioRecordingService: NSObject, AudioRecordingProtocol {
         }
     }
     
-    // MARK: - Permissions
-    
     func requestPermission() async -> Bool {
         await AVAudioApplication.requestRecordPermission()
     }
@@ -48,8 +39,6 @@ final class AudioRecordingService: NSObject, AudioRecordingProtocol {
     func checkPermission() -> Bool {
         AVAudioApplication.shared.recordPermission == .granted
     }
-    
-    // MARK: - Recording
     
     func startRecording() throws -> URL {
         if isRecording {
@@ -92,8 +81,6 @@ final class AudioRecordingService: NSObject, AudioRecordingProtocol {
         return currentRecordingURL
     }
     
-    // MARK: - File Management
-    
     private func getTemporaryDirectory() -> URL {
         FileManager.default.temporaryDirectory
     }
@@ -101,8 +88,6 @@ final class AudioRecordingService: NSObject, AudioRecordingProtocol {
     func deleteRecording(at url: URL) {
         try? FileManager.default.removeItem(at: url)
     }
-    
-    // MARK: - Interruption Handling
     
     @objc private func handleInterruption(notification: Notification) {
         guard let userInfo = notification.userInfo,
@@ -116,15 +101,11 @@ final class AudioRecordingService: NSObject, AudioRecordingProtocol {
         }
     }
     
-    // MARK: - Cleanup
-    
     deinit {
         NotificationCenter.default.removeObserver(self)
         try? audioSession.setActive(false)
     }
 }
-
-// MARK: - Recording Errors
 
 enum RecordingError: LocalizedError {
     case failedToStart
@@ -137,9 +118,7 @@ enum RecordingError: LocalizedError {
     }
 }
 
-// MARK: - AVAudioRecorderDelegate
-
-extension AudioRecordingService: AVAudioRecorderDelegate {
+extension AudioRecorder: AVAudioRecorderDelegate {
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
             print("Recording did not finish successfully")
@@ -152,5 +131,3 @@ extension AudioRecordingService: AVAudioRecorderDelegate {
         }
     }
 }
-
-

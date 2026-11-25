@@ -1,29 +1,20 @@
 import Foundation
-import SwiftUI
+import Observation
 
-@MainActor
-class ConversationViewModel: ObservableObject {
+@Observable
+final class ConversationViewModel {
+    var messages: [Message] = []
+    var state: ConversationState = .idle
+    var errorMessage: String?
+    var hasMicrophonePermission: Bool = false
+    var hasRecordingData: Bool = false
     
-    // MARK: - Published Properties
-    
-    @Published var messages: [Message] = []
-    @Published var state: AppState = .idle
-    @Published var errorMessage: String?
-    @Published var hasMicrophonePermission: Bool = false
-    @Published var hasRecordingData: Bool = false
-    
-    // MARK: - Services
-    
-    private let audioRecordingService: AudioRecordingProtocol
-    private let transcriptionService: TranscriptionProtocol
-    private let chatService: ChatProtocol
-    private let ttsService: TextToSpeechProtocol
-    
-    // MARK: - Private Properties
+    private let recorder: AudioRecording
+    private let transcriber: Transcribing
+    private let chat: ChatCompleting
+    private let synthesizer: SpeechSynthesizing
     
     private var currentRecordingURL: URL?
-    
-    // MARK: - Status Text
     
     var statusText: String {
         switch state {
@@ -42,8 +33,6 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Recording State
-    
     var isRecording: Bool {
         state == .recording
     }
@@ -53,35 +42,22 @@ class ConversationViewModel: ObservableObject {
         (state.canStartRecording || state == .recording)
     }
     
-    // MARK: - Initialization
-    
-    init() {
-        self.audioRecordingService = AudioRecordingService()
-        self.transcriptionService = TranscriptionService()
-        self.chatService = ChatService()
-        self.ttsService = TextToSpeechService()
-        
-        self.hasMicrophonePermission = audioRecordingService.checkPermission()
-    }
-    
     init(
-        audioRecordingService: AudioRecordingProtocol,
-        transcriptionService: TranscriptionProtocol,
-        chatService: ChatProtocol,
-        ttsService: TextToSpeechProtocol
+        recorder: AudioRecording,
+        transcriber: Transcribing,
+        chat: ChatCompleting,
+        synthesizer: SpeechSynthesizing
     ) {
-        self.audioRecordingService = audioRecordingService
-        self.transcriptionService = transcriptionService
-        self.chatService = chatService
-        self.ttsService = ttsService
+        self.recorder = recorder
+        self.transcriber = transcriber
+        self.chat = chat
+        self.synthesizer = synthesizer
         
-        self.hasMicrophonePermission = audioRecordingService.checkPermission()
+        self.hasMicrophonePermission = recorder.checkPermission()
     }
-    
-    // MARK: - Permissions
     
     func requestMicrophonePermission() async {
-        let granted = await audioRecordingService.requestPermission()
+        let granted = await recorder.requestPermission()
         hasMicrophonePermission = granted
         
         guard granted else {
@@ -90,8 +66,6 @@ class ConversationViewModel: ObservableObject {
             return
         }
     }
-    
-    // MARK: - Recording Control
     
     func startRecording() {
         guard hasMicrophonePermission else {
@@ -105,7 +79,7 @@ class ConversationViewModel: ObservableObject {
         }
         
         do {
-            currentRecordingURL = try audioRecordingService.startRecording()
+            currentRecordingURL = try recorder.startRecording()
             state = .recording
             errorMessage = nil
         } catch let error as RecordingError {
@@ -122,7 +96,7 @@ class ConversationViewModel: ObservableObject {
             return
         }
         
-        guard let recordingURL = audioRecordingService.stopRecording() else {
+        guard let recordingURL = recorder.stopRecording() else {
             errorMessage = "Something went wrong. Please try again."
             state = .error
             return
@@ -136,40 +110,27 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Processing Pipeline
-    
-    /// Process the recorded audio through the full pipeline
-    /// 1. Transcribe audio to text
-    /// 2. Send text to chat API
-    /// 3. Display response
-    /// 4. Optionally speak response
     private func processRecording(at url: URL) async {
         do {
-            // Step 1: Transcribe audio to text
             state = .transcribing
-            let transcribedText = try await transcriptionService.transcribe(audioURL: url)
+            let transcribedText = try await transcriber.transcribe(url)
             
-            // Add user message to conversation
             let userMessage = Message(role: .user, content: transcribedText)
             messages.append(userMessage)
             
-            // Step 2: Send to chat API
             state = .generating
-            let aiResponse = try await chatService.sendMessage(messages: messages)
+            let aiResponse = try await chat.reply(to: messages)
             
-            // Add assistant message to conversation
             let assistantMessage = Message(role: .assistant, content: aiResponse)
             messages.append(assistantMessage)
             
-            // Step 3: Speak the response
             state = .speaking
-            ttsService.speak(aiResponse) { [weak self] in
+            synthesizer.speak(aiResponse) { [weak self] in
                 Task { @MainActor in
                     self?.state = .idle
                 }
             }
             
-            // Clean up the recording file
             deleteRecording(url)
                         
         } catch let error as APIError {
@@ -193,11 +154,9 @@ class ConversationViewModel: ObservableObject {
     }
     
     func deleteRecording(_ url: URL) {
-        audioRecordingService.deleteRecording(at: url)
+        recorder.deleteRecording(at: url)
         hasRecordingData = false
     }
-    
-    // MARK: - Error Handling
     
     func retry() {
         errorMessage = nil
@@ -217,21 +176,15 @@ class ConversationViewModel: ObservableObject {
         state = .idle
     }
     
-    // MARK: - TTS Control
-    
     func stopSpeaking() {
-        ttsService.stop()
+        synthesizer.stop()
         state = .idle
     }
-    
-    // MARK: - Conversation Management
     
     func clearConversation() {
         messages.removeAll()
         state = .idle
         errorMessage = nil
-        ttsService.stop()
+        synthesizer.stop()
     }
 }
-
-

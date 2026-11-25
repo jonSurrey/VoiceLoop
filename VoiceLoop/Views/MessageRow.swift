@@ -16,24 +16,31 @@ struct MessageRow: View {
             if message.role == .user {
                 Spacer()
             }
-            VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
+            VStack(alignment: message.role == .user ? .trailing : .leading, spacing: Layout.timestampSpacing) {
                 Text(message.content)
-                    .padding(12)
+                    .padding(Layout.bubblePadding)
                     .background(bubbleColor)
                     .foregroundColor(textColor)
-                    .cornerRadius(16)
+                    .cornerRadius(Layout.bubbleCornerRadius)
                 Text(message.timestamp, style: .time)
                     .font(.caption2)
                     .foregroundColor(.gray)
             }
-            .frame(maxWidth: 280, alignment: message.role == .user ? .trailing : .leading)
+            .frame(maxWidth: Layout.maxBubbleWidth, alignment: message.role == .user ? .trailing : .leading)
             
             if message.role == .assistant {
                 Spacer()
             }
         }
         .padding(.horizontal)
-        .padding(.vertical, 4)
+        .padding(.vertical, Layout.rowVerticalPadding)
+    }
+
+    private enum Layout {
+        static let timestampSpacing: CGFloat = 4
+        static let bubblePadding: CGFloat = 12
+        static let bubbleCornerRadius: CGFloat = 16
+        static let maxBubbleWidth: CGFloat = 280
+        static let rowVerticalPadding: CGFloat = 4
     }
 }
-
