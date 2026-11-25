@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ConversationView: View {
     let viewModel: ConversationViewModel
+    @Environment(\.openURL) private var openURL
     
     var body: some View {
         NavigationStack {
@@ -43,10 +44,15 @@ struct ConversationView: View {
             }
             .alert("Oops!", isPresented: isShowingError, presenting: viewModel.error) { failure in
                 Button("OK", role: .cancel) {}
-                if failure.retryStep != nil {
+                switch failure.recovery {
+                case .retry:
                     Button("Try Again") {
                         Task { await viewModel.retry(failure) }
                     }
+                case .openSettings:
+                    Button("Open Settings", action: openSettings)
+                case nil:
+                    EmptyView()
                 }
             } message: { failure in
                 Text(failure.message)
@@ -56,6 +62,12 @@ struct ConversationView: View {
                     await viewModel.requestMicrophonePermission()
                 }
             }
+        }
+    }
+    
+    private func openSettings() {
+        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+            openURL(settingsURL)
         }
     }
     

@@ -1,6 +1,6 @@
 import Foundation
 
-enum TranscriptionError: LocalizedError {
+enum TranscriptionError: LocalizedError, RetryableError {
     case notAuthorized
     case unavailable
     case recognitionFailed
@@ -14,5 +14,9 @@ enum TranscriptionError: LocalizedError {
         case .recognitionFailed:
             "Couldn't understand the recording. Try again."
         }
+    }
+
+    var isRetryable: Bool {
+        self == .recognitionFailed
     }
 }
