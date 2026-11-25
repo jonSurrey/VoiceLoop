@@ -4,7 +4,7 @@ struct MessageRow: View {
     let message: Message
     
     private var bubbleColor: Color {
-        message.role == .user ? .blue : Color(.gray)
+        message.role == .user ? .accentColor : Color(.secondarySystemBackground)
     }
     
     private var textColor: Color {
@@ -24,7 +24,7 @@ struct MessageRow: View {
                     .cornerRadius(Layout.bubbleCornerRadius)
                 Text(message.timestamp, style: .time)
                     .font(.caption2)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
             }
             .frame(maxWidth: Layout.maxBubbleWidth, alignment: message.role == .user ? .trailing : .leading)
             

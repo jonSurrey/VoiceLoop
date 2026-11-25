@@ -14,7 +14,6 @@ struct ConversationView: View {
                 recordButtonSection
                     .padding(.bottom, Layout.recordButtonBottomPadding)
             }
-            .background(Color(.white))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -71,7 +70,7 @@ struct ConversationView: View {
             
             Image(systemName: "mic.fill")
                 .font(.system(size: Layout.emptyStateIconSize))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
             
             Text("Press and hold to speak")
                 .font(.title3)
