@@ -66,8 +66,6 @@ struct ConversationView: View {
         .navigationViewStyle(.stack)
     }
     
-    // MARK: - Custom Views
-    
     private var emptyStateView: some View {
         VStack(spacing: 20) {
             Spacer()
@@ -130,4 +128,3 @@ struct ConversationView: View {
         .padding(.top, 10)
     }
 }
-

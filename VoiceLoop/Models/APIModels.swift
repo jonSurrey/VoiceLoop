@@ -1,12 +1,8 @@
 import Foundation
 
-// MARK: - Transcription Model
-
 struct TranscriptionResponse: Codable {
     let text: String
 }
-
-// MARK: - Chat Models
 
 struct ChatCompletionRequest: Codable {
     let model: String
@@ -30,8 +26,6 @@ struct ChatCompletionResponse: Codable {
         }
     }
 }
-
-// MARK: - Errors
 
 enum APIError: LocalizedError {
     case invalidURL

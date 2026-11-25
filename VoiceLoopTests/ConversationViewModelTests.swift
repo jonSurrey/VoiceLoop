@@ -3,7 +3,6 @@ import XCTest
 
 @MainActor
 final class ConversationViewModelTests: XCTestCase {
-    
     var viewModel: ConversationViewModel!
     var mockAudio: MockAudioRecordingService!
     var mockTranscription: MockTranscriptionService!
@@ -24,8 +23,6 @@ final class ConversationViewModelTests: XCTestCase {
             ttsService: mockTTS
         )
     }
-    
-    // MARK: - State Tests
     
     func testInitialStateShouldBeIdle() {
         XCTAssertEqual(viewModel.state, .idle)
@@ -56,8 +53,6 @@ final class ConversationViewModelTests: XCTestCase {
         
         XCTAssertFalse(viewModel.canRecord)
     }
-    
-    // MARK: - Recording Tests
     
     func testStartRecordingUpdatesState() throws {
         mockAudio.hasPermission = true
@@ -90,8 +85,6 @@ final class ConversationViewModelTests: XCTestCase {
         XCTAssertTrue(mockAudio.stopRecordingCalled)
     }
     
-    // MARK: - Chat Requests Tests
-    
     func testFullConversationFlow() async throws {
         mockAudio.hasPermission = true
         mockTranscription.mockTranscription = "Hello AI"
@@ -117,8 +110,6 @@ final class ConversationViewModelTests: XCTestCase {
         XCTAssertTrue(mockTTS.speakCalled)
     }
     
-    // MARK: - Error Tests
-    
     func testErrorHandlingOnTranscriptionFails() async throws {
         mockAudio.hasPermission = true
         mockTranscription.shouldThrowError = true
@@ -138,8 +129,6 @@ final class ConversationViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state, .error)
         XCTAssertNotNil(viewModel.errorMessage)
     }
-    
-    // MARK: - TextToSpeech Tests
     
     func testStopSpeakingCallsTTSStop() {
         viewModel.stopSpeaking()
@@ -162,8 +151,6 @@ final class ConversationViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 }
-
-// MARK: - Mocks
 
 final class MockAudioRecordingService: AudioRecordingProtocol {
     var hasPermission = true
@@ -240,4 +227,3 @@ final class MockTextToSpeechService: TextToSpeechProtocol {
     func pause() {}
     func resume() {}
 }
-

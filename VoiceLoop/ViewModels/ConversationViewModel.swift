@@ -3,27 +3,18 @@ import SwiftUI
 
 @MainActor
 class ConversationViewModel: ObservableObject {
-    
-    // MARK: - Published Properties
-    
     @Published var messages: [Message] = []
     @Published var state: AppState = .idle
     @Published var errorMessage: String?
     @Published var hasMicrophonePermission: Bool = false
     @Published var hasRecordingData: Bool = false
     
-    // MARK: - Services
-    
     private let audioRecordingService: AudioRecordingProtocol
     private let transcriptionService: TranscriptionProtocol
     private let chatService: ChatProtocol
     private let ttsService: TextToSpeechProtocol
     
-    // MARK: - Private Properties
-    
     private var currentRecordingURL: URL?
-    
-    // MARK: - Status Text
     
     var statusText: String {
         switch state {
@@ -42,8 +33,6 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Recording State
-    
     var isRecording: Bool {
         state == .recording
     }
@@ -52,8 +41,6 @@ class ConversationViewModel: ObservableObject {
         hasMicrophonePermission && 
         (state.canStartRecording || state == .recording)
     }
-    
-    // MARK: - Initialization
     
     init() {
         self.audioRecordingService = AudioRecordingService()
@@ -78,8 +65,6 @@ class ConversationViewModel: ObservableObject {
         self.hasMicrophonePermission = audioRecordingService.checkPermission()
     }
     
-    // MARK: - Permissions
-    
     func requestMicrophonePermission() async {
         let granted = await audioRecordingService.requestPermission()
         hasMicrophonePermission = granted
@@ -90,8 +75,6 @@ class ConversationViewModel: ObservableObject {
             return
         }
     }
-    
-    // MARK: - Recording Control
     
     func startRecording() {
         guard hasMicrophonePermission else {
@@ -136,32 +119,20 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Processing Pipeline
-    
-    /// Process the recorded audio through the full pipeline
-    /// 1. Transcribe audio to text
-    /// 2. Send text to chat API
-    /// 3. Display response
-    /// 4. Optionally speak response
     private func processRecording(at url: URL) async {
         do {
-            // Step 1: Transcribe audio to text
             state = .transcribing
             let transcribedText = try await transcriptionService.transcribe(audioURL: url)
             
-            // Add user message to conversation
             let userMessage = Message(role: .user, content: transcribedText)
             messages.append(userMessage)
             
-            // Step 2: Send to chat API
             state = .generating
             let aiResponse = try await chatService.sendMessage(messages: messages)
             
-            // Add assistant message to conversation
             let assistantMessage = Message(role: .assistant, content: aiResponse)
             messages.append(assistantMessage)
             
-            // Step 3: Speak the response
             state = .speaking
             ttsService.speak(aiResponse) { [weak self] in
                 Task { @MainActor in
@@ -169,7 +140,6 @@ class ConversationViewModel: ObservableObject {
                 }
             }
             
-            // Clean up the recording file
             deleteRecording(url)
                         
         } catch let error as APIError {
@@ -197,8 +167,6 @@ class ConversationViewModel: ObservableObject {
         hasRecordingData = false
     }
     
-    // MARK: - Error Handling
-    
     func retry() {
         errorMessage = nil
         
@@ -217,14 +185,10 @@ class ConversationViewModel: ObservableObject {
         state = .idle
     }
     
-    // MARK: - TTS Control
-    
     func stopSpeaking() {
         ttsService.stop()
         state = .idle
     }
-    
-    // MARK: - Conversation Management
     
     func clearConversation() {
         messages.removeAll()
@@ -233,5 +197,3 @@ class ConversationViewModel: ObservableObject {
         ttsService.stop()
     }
 }
-
-
