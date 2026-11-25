@@ -42,15 +42,6 @@ class ConversationViewModel: ObservableObject {
         (state.canStartRecording || state == .recording)
     }
     
-    init() {
-        self.audioRecordingService = AudioRecordingService()
-        self.transcriptionService = TranscriptionService()
-        self.chatService = ChatService()
-        self.ttsService = TextToSpeechService()
-        
-        self.hasMicrophonePermission = audioRecordingService.checkPermission()
-    }
-    
     init(
         audioRecordingService: AudioRecordingProtocol,
         transcriptionService: TranscriptionProtocol,
