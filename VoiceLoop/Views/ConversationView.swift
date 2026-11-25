@@ -48,7 +48,7 @@ struct ConversationView: View {
                 }
                 if viewModel.hasRecordingData {
                     Button("Try Again") {
-                        viewModel.retry()
+                        Task { await viewModel.retry() }
                     }
                 }
             } message: {
@@ -120,7 +120,7 @@ struct ConversationView: View {
                     viewModel.startRecording()
                 },
                 onStopRecording: {
-                    viewModel.stopRecording()
+                    Task { await viewModel.stopRecording() }
                 }
             )
         }

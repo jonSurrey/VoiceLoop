@@ -91,7 +91,7 @@ final class ConversationViewModel {
         }
     }
     
-    func stopRecording() {
+    func stopRecording() async {
         guard state.canStopRecording else {
             return
         }
@@ -105,9 +105,7 @@ final class ConversationViewModel {
         currentRecordingURL = recordingURL
         hasRecordingData = true
         
-        Task {
-            await processRecording(at: recordingURL)
-        }
+        await processRecording(at: recordingURL)
     }
     
     private func processRecording(at url: URL) async {
@@ -158,7 +156,7 @@ final class ConversationViewModel {
         hasRecordingData = false
     }
     
-    func retry() {
+    func retry() async {
         errorMessage = nil
         
         guard let url = currentRecordingURL else {
@@ -166,9 +164,7 @@ final class ConversationViewModel {
             return
         }
         
-        Task {
-            await processRecording(at: url)
-        }
+        await processRecording(at: url)
     }
     
     func dismissError() {

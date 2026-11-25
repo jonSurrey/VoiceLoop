@@ -1,217 +1,129 @@
-import XCTest
+import Foundation
+import Testing
 @testable import VoiceLoop
 
-final class ConversationViewModelTests: XCTestCase {
-    var viewModel: ConversationViewModel!
-    var recorder: MockAudioRecorder!
-    var transcriber: MockTranscriber!
-    var chat: MockChat!
-    var synthesizer: MockSpeechSynthesizer!
-    
-    override func setUp() {
-        super.setUp()
-        recorder = MockAudioRecorder()
-        transcriber = MockTranscriber()
-        chat = MockChat()
-        synthesizer = MockSpeechSynthesizer()
-        
-        viewModel = ConversationViewModel(
-            recorder: recorder,
-            transcriber: transcriber,
-            chat: chat,
-            synthesizer: synthesizer
-        )
+@Suite("Conversation view model")
+struct ConversationViewModelTests {
+    let recorder = MockAudioRecorder()
+    let transcriber = MockTranscriber()
+    let chat = MockChat()
+    let synthesizer = MockSpeechSynthesizer()
+
+    private func makeViewModel() -> ConversationViewModel {
+        ConversationViewModel(recorder: recorder, transcriber: transcriber, chat: chat, synthesizer: synthesizer)
     }
-    
-    func testInitialStateShouldBeIdle() {
-        XCTAssertEqual(viewModel.state, .idle)
-        XCTAssertTrue(viewModel.messages.isEmpty)
-        XCTAssertNil(viewModel.errorMessage)
+
+    @Test("Starts idle with no messages")
+    func startsIdle() {
+        let viewModel = makeViewModel()
+
+        #expect(viewModel.state == .idle)
+        #expect(viewModel.messages.isEmpty)
+        #expect(viewModel.errorMessage == nil)
     }
-    
-    func testCanRecordWhenPermissionGranted() {
-        recorder.hasPermission = true
-        viewModel = ConversationViewModel(
-            recorder: recorder,
-            transcriber: transcriber,
-            chat: chat,
-            synthesizer: synthesizer
-        )
-        
-        XCTAssertTrue(viewModel.canRecord)
-    }
-    
-    func testCannotRecordWithoutPermission() {
-        recorder.hasPermission = false
-        viewModel = ConversationViewModel(
-            recorder: recorder,
-            transcriber: transcriber,
-            chat: chat,
-            synthesizer: synthesizer
-        )
-        
-        XCTAssertFalse(viewModel.canRecord)
-    }
-    
-    func testStartRecordingUpdatesState() throws {
-        recorder.hasPermission = true
-        viewModel = ConversationViewModel(
-            recorder: recorder,
-            transcriber: transcriber,
-            chat: chat,
-            synthesizer: synthesizer
-        )
-        
+
+    @Test("Recording without microphone permission shows an error")
+    func recordingWithoutPermission() {
+        recorder.permission = false
+        let viewModel = makeViewModel()
+
         viewModel.startRecording()
-        
-        XCTAssertEqual(viewModel.state, .recording)
-        XCTAssertTrue(recorder.startRecordingCalled)
-        XCTAssertTrue(viewModel.isRecording)
+
+        #expect(viewModel.state == .error)
+        #expect(viewModel.errorMessage != nil)
     }
-    
-    func testStopRecordingTriggersProcessing() {
-        recorder.hasPermission = true
-        viewModel = ConversationViewModel(
-            recorder: recorder,
-            transcriber: transcriber,
-            chat: chat,
-            synthesizer: synthesizer
-        )
-        
+
+    @Test("Denying microphone permission shows an error")
+    func denyingPermission() async {
+        recorder.permission = false
+        let viewModel = makeViewModel()
+
+        await viewModel.requestMicrophonePermission()
+
+        #expect(!viewModel.hasMicrophonePermission)
+        #expect(viewModel.state == .error)
+    }
+
+    @Test("Starting a recording moves to recording")
+    func startingRecording() {
+        let viewModel = makeViewModel()
+
         viewModel.startRecording()
-        viewModel.stopRecording()
-        
-        XCTAssertTrue(recorder.stopRecordingCalled)
+
+        #expect(viewModel.state == .recording)
+        #expect(viewModel.isRecording)
     }
-    
-    func testFullConversationFlow() async throws {
-        recorder.hasPermission = true
-        transcriber.transcript = "Hello AI"
-        chat.mockResponse = "Hello! How can I help?"
-        
-        viewModel = ConversationViewModel(
-            recorder: recorder,
-            transcriber: transcriber,
-            chat: chat,
-            synthesizer: synthesizer
-        )
-        
+
+    @Test("A recorder that fails to start shows an error")
+    func recorderFailsToStart() {
+        recorder.startError = TestError()
+        let viewModel = makeViewModel()
+
         viewModel.startRecording()
-        viewModel.stopRecording()
-        
-        try await Task.sleep(nanoseconds: 100_000_000)
-        
-        XCTAssertEqual(viewModel.messages.count, 2)
-        XCTAssertEqual(viewModel.messages[0].content, "Hello AI")
-        XCTAssertEqual(viewModel.messages[0].role, .user)
-        XCTAssertEqual(viewModel.messages[1].content, "Hello! How can I help?")
-        XCTAssertEqual(viewModel.messages[1].role, .assistant)
-        XCTAssertTrue(synthesizer.speakCalled)
+
+        #expect(viewModel.state == .error)
+        #expect(viewModel.errorMessage != nil)
     }
-    
-    func testErrorHandlingOnTranscriptionFails() async throws {
-        recorder.hasPermission = true
-        transcriber.shouldThrowError = true
-        
-        viewModel = ConversationViewModel(
-            recorder: recorder,
-            transcriber: transcriber,
-            chat: chat,
-            synthesizer: synthesizer
-        )
-        
+
+    @Test("A stop that returns no recording shows an error")
+    func stopWithoutRecording() async {
+        let viewModel = makeViewModel()
         viewModel.startRecording()
-        viewModel.stopRecording()
-        
-        try await Task.sleep(nanoseconds: 100_000_000)
-        
-        XCTAssertEqual(viewModel.state, .error)
-        XCTAssertNotNil(viewModel.errorMessage)
+        recorder.stopResult = nil
+
+        await viewModel.stopRecording()
+
+        #expect(viewModel.state == .error)
+        #expect(transcriber.transcribedURLs.isEmpty)
     }
-    
-    func testStopSpeakingCallsTTSStop() {
+
+    @Test("A full turn adds both messages and speaks the reply")
+    func fullTurn() async {
+        transcriber.result = .success("Hello AI")
+        chat.result = .success("Hello! How can I help?")
+        let viewModel = makeViewModel()
+
+        viewModel.startRecording()
+        await viewModel.stopRecording()
+
+        #expect(viewModel.messages.map(\.role) == [.user, .assistant])
+        #expect(viewModel.messages.map(\.content) == ["Hello AI", "Hello! How can I help?"])
+        #expect(synthesizer.spokenTexts == ["Hello! How can I help?"])
+    }
+
+    @Test("A failed transcription shows an error")
+    func failedTranscription() async {
+        transcriber.result = .failure(TestError())
+        let viewModel = makeViewModel()
+
+        viewModel.startRecording()
+        await viewModel.stopRecording()
+
+        #expect(viewModel.state == .error)
+        #expect(viewModel.errorMessage != nil)
+        #expect(viewModel.messages.isEmpty)
+    }
+
+    @Test("Stopping speech stops the synthesizer and returns to idle")
+    func stoppingSpeech() {
+        let viewModel = makeViewModel()
+
         viewModel.stopSpeaking()
-        
-        XCTAssertTrue(synthesizer.stopCalled)
-        XCTAssertEqual(viewModel.state, .idle)
-    }
-    
-    func testTTSCompletionTransitionsToIdle() {
-        let expectation = XCTestExpectation(description: "TTS completion")
-        
-        synthesizer.onSpeak = { completion in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                completion?()
-                expectation.fulfill()
-            }
-        }
-        
-        synthesizer.speak("Test", completion: nil)
-        wait(for: [expectation], timeout: 1.0)
-    }
-}
 
-final class MockAudioRecorder: AudioRecording {
-    var hasPermission = true
-    var startRecordingCalled = false
-    var stopRecordingCalled = false
-    
-    func requestPermission() async -> Bool {
-        return hasPermission
+        #expect(synthesizer.stopCount == 1)
+        #expect(viewModel.state == .idle)
     }
-    
-    func checkPermission() -> Bool {
-        return hasPermission
-    }
-    
-    func startRecording() throws -> URL {
-        startRecordingCalled = true
-        return URL(fileURLWithPath: "/tmp/test.m4a")
-    }
-    
-    func stopRecording() -> URL? {
-        stopRecordingCalled = true
-        return URL(fileURLWithPath: "/tmp/test.m4a")
-    }
-    
-    func deleteRecording(at url: URL) {}
-}
 
-final class MockTranscriber: Transcribing {
-    var transcript = ""
-    var shouldThrowError = false
-    
-    func transcribe(_ audioURL: URL) async throws -> String {
-        if shouldThrowError {
-            throw APIError.serverError("Transcription failed")
-        }
-        return transcript
-    }
-}
+    @Test("Clearing the conversation removes messages and stops speech")
+    func clearingConversation() async {
+        let viewModel = makeViewModel()
+        viewModel.startRecording()
+        await viewModel.stopRecording()
 
-final class MockChat: ChatCompleting {
-    var mockResponse = ""
-    var shouldThrowError = false
-    
-    func reply(to messages: [Message]) async throws -> String {
-        if shouldThrowError {
-            throw APIError.serverError("Chat failed")
-        }
-        return mockResponse
-    }
-}
+        viewModel.clearConversation()
 
-final class MockSpeechSynthesizer: SpeechSynthesizing {
-    var speakCalled = false
-    var stopCalled = false
-    var onSpeak: (((() -> Void)?) -> Void)?
-    
-    func speak(_ text: String, completion: (() -> Void)?) {
-        speakCalled = true
-        onSpeak?(completion)
-    }
-    
-    func stop() {
-        stopCalled = true
+        #expect(viewModel.messages.isEmpty)
+        #expect(viewModel.state == .idle)
+        #expect(synthesizer.stopCount == 1)
     }
 }
