@@ -32,7 +32,7 @@ struct ConversationView: View {
                             viewModel.stopSpeaking()
                         }
                         .foregroundColor(.red)
-                    } else if !viewModel.messages.isEmpty {
+                    } else if viewModel.state == .idle && !viewModel.messages.isEmpty {
                         Button(action: {
                             viewModel.clearConversation()
                         }) {
