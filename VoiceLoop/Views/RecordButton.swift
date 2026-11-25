@@ -34,7 +34,7 @@ struct RecordButton: View {
                 .overlay(
                     Image(systemName: isRecording ? "stop.fill" : "mic.fill")
                         .font(.system(size: Layout.iconSize))
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 )
                 .scaleEffect(isRecording ? Layout.buttonRecordingScale : 1)
                 .animation(.spring(response: Layout.buttonSpringResponse), value: isRecording)

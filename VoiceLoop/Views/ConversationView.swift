@@ -21,18 +21,18 @@ struct ConversationView: View {
                     HStack(spacing: Layout.titleSpacing) {
                         if viewModel.showsProgress {
                             ProgressView()
-                                .scaleEffect(Layout.titleProgressScale)
+                                .controlSize(.small)
                         }
                         Text(viewModel.title)
                             .font(.headline)
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     if viewModel.canStopSpeaking {
                         Button("Stop") {
                             viewModel.stopSpeaking()
                         }
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                     } else if viewModel.canClear {
                         Button(action: {
                             viewModel.clearConversation()
@@ -88,15 +88,15 @@ struct ConversationView: View {
             
             Image(systemName: "mic.fill")
                 .font(.system(size: Layout.emptyStateIconSize))
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             
             Text("Press and hold to speak")
                 .font(.title3)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             
             Text("Your conversation will appear here")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             
             Spacer()
         }
@@ -128,7 +128,7 @@ struct ConversationView: View {
             if let recordHint = viewModel.recordHint {
                 Text(recordHint)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             RecordButton(
                 isRecording: viewModel.isRecording,
@@ -146,7 +146,6 @@ struct ConversationView: View {
 
     private enum Layout {
         static let titleSpacing: CGFloat = 8
-        static let titleProgressScale: CGFloat = 0.8
         static let emptyStateSpacing: CGFloat = 20
         static let emptyStateIconSize: CGFloat = 60
         static let messageSpacing: CGFloat = 8

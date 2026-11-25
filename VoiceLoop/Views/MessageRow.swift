@@ -20,11 +20,11 @@ struct MessageRow: View {
                 Text(message.content)
                     .padding(Layout.bubblePadding)
                     .background(bubbleColor)
-                    .foregroundColor(textColor)
-                    .cornerRadius(Layout.bubbleCornerRadius)
+                    .foregroundStyle(textColor)
+                    .clipShape(.rect(cornerRadius: Layout.bubbleCornerRadius))
                 Text(message.timestamp, style: .time)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: Layout.maxBubbleWidth, alignment: message.role == .user ? .trailing : .leading)
             
