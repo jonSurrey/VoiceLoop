@@ -104,6 +104,18 @@ struct ConversationViewModelTests {
         #expect(viewModel.messages.isEmpty)
     }
 
+    @Test("An interruption stops and deletes the recording and shows an error")
+    func interruption() {
+        let viewModel = makeViewModel()
+        viewModel.startRecording()
+
+        recorder.onInterruption?()
+
+        #expect(viewModel.state == .error)
+        #expect(viewModel.errorMessage != nil)
+        #expect(recorder.deletedURLs == [recorder.recordingFile])
+    }
+
     @Test("Stopping speech stops the synthesizer and returns to idle")
     func stoppingSpeech() {
         let viewModel = makeViewModel()

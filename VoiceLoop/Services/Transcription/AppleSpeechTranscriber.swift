@@ -1,61 +1,52 @@
 import Foundation
+import os
 import Speech
 
 final class AppleSpeechTranscriber: Transcribing {
-    private let recognizer: SFSpeechRecognizer?
-    
-    init(locale: Locale = Locale(identifier: "en-US")) {
-        self.recognizer = SFSpeechRecognizer(locale: locale)
-    }
-    
+    private let recognizer = SFSpeechRecognizer()
+
     func transcribe(_ audioURL: URL) async throws -> String {
-        guard FileManager.default.fileExists(atPath: audioURL.path) else {
-            throw TranscriptionError.recognitionFailed
-        }
-        
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: audioURL.path),
-              let fileSize = attributes[.size] as? Int64, fileSize > 0 else {
-            throw TranscriptionError.recognitionFailed
-        }
-        
-        guard await requestPermission() else {
+        guard await Self.requestAuthorization() else {
             throw TranscriptionError.notAuthorized
         }
-        
-        guard let recognizer = recognizer else {
+        guard let recognizer, recognizer.isAvailable else {
             throw TranscriptionError.unavailable
         }
-        
-        guard recognizer.isAvailable else {
-            throw TranscriptionError.unavailable
-        }
-        
+
         let request = SFSpeechURLRecognitionRequest(url: audioURL)
         request.shouldReportPartialResults = false
-        
-        return try await withCheckedThrowingContinuation { continuation in
-            recognizer.recognitionTask(with: request) { result, error in
-                if error != nil {
-                    continuation.resume(throwing: TranscriptionError.recognitionFailed)
-                    return
-                }
-                
-                guard let result = result else {
-                    continuation.resume(throwing: TranscriptionError.recognitionFailed)
-                    return
-                }
-                
-                if result.isFinal {
-                    continuation.resume(returning: result.bestTranscription.formattedString)
-                }
-            }
+        let transcript = try await Self.recognize(request, with: recognizer)
+        guard !transcript.isEmpty else {
+            throw TranscriptionError.recognitionFailed
         }
+        return transcript
     }
-    
-    private func requestPermission() async -> Bool {
+
+    private nonisolated static func requestAuthorization() async -> Bool {
         await withCheckedContinuation { continuation in
             SFSpeechRecognizer.requestAuthorization { status in
                 continuation.resume(returning: status == .authorized)
+            }
+        }
+    }
+
+    /// The recognizer can call back more than once; the lock hands the continuation out to the first final result or error.
+    private nonisolated static func recognize(
+        _ request: SFSpeechURLRecognitionRequest,
+        with recognizer: SFSpeechRecognizer
+    ) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            let pending = OSAllocatedUnfairLock<CheckedContinuation<String, Error>?>(initialState: continuation)
+            recognizer.recognitionTask(with: request) { result, error in
+                let outcome: Result<String, Error>
+                if error != nil {
+                    outcome = .failure(TranscriptionError.recognitionFailed)
+                } else if let result, result.isFinal {
+                    outcome = .success(result.bestTranscription.formattedString)
+                } else {
+                    return
+                }
+                pending.withLock { $0.take() }?.resume(with: outcome)
             }
         }
     }

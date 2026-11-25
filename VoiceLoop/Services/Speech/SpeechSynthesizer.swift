@@ -8,7 +8,8 @@ final class SpeechSynthesizer: NSObject, SpeechSynthesizing {
     override init() {
         self.synthesizer = AVSpeechSynthesizer()
         super.init()
-        self.synthesizer.delegate = self
+        synthesizer.usesApplicationAudioSession = false
+        synthesizer.delegate = self
     }
     
     func speak(_ text: String, completion: (() -> Void)? = nil) {
@@ -22,7 +23,6 @@ final class SpeechSynthesizer: NSObject, SpeechSynthesizing {
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         utterance.pitchMultiplier = 1.0
         utterance.volume = 1.0
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         
         synthesizer.speak(utterance)
     }

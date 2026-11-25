@@ -54,6 +54,9 @@ final class ConversationViewModel {
         self.synthesizer = synthesizer
         
         self.hasMicrophonePermission = recorder.checkPermission()
+        recorder.onInterruption = { [weak self] in
+            self?.handleInterruption()
+        }
     }
     
     func requestMicrophonePermission() async {
@@ -162,6 +165,17 @@ final class ConversationViewModel {
     func dismissError() {
         errorMessage = nil
         state = .idle
+    }
+    
+    private func handleInterruption() {
+        guard state == .recording else {
+            return
+        }
+        if let url = recorder.stopRecording() {
+            recorder.deleteRecording(at: url)
+        }
+        errorMessage = "Recording was interrupted."
+        state = .error
     }
     
     func stopSpeaking() {
