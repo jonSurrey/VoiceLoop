@@ -221,6 +221,18 @@ struct ConversationViewModelTests {
         #expect(viewModel.state == .idle)
     }
 
+    @Test("Clearing is offered only when idle with messages")
+    func clearingAvailability() async {
+        let viewModel = makeViewModel()
+        #expect(!viewModel.canClear)
+
+        viewModel.startRecording()
+        #expect(!viewModel.canClear)
+
+        await viewModel.stopRecording()
+        #expect(viewModel.canClear)
+    }
+
     @Test("Clearing the conversation removes messages and the recording kept for retry")
     func clearingConversation() async {
         let viewModel = makeViewModel()

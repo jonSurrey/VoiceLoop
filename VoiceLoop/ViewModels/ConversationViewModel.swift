@@ -17,21 +17,32 @@ final class ConversationViewModel {
     
     private var keptRecording: URL?
     
-    var statusText: String {
+    var title: String {
         switch state {
         case .idle:
-            return ""
+            "VoiceLoop"
         case .recording:
-            return "Recording..."
+            "Recording..."
         case .transcribing:
-            return "Transcribing audio..."
+            "Transcribing audio..."
         case .generating:
-            return "Generating response..."
+            "Generating response..."
         case .speaking:
-            return "Speaking response..."
+            "Speaking response..."
         case .error:
-            return "Error occurred"
+            "Error occurred"
         }
+    }
+    
+    var showsProgress: Bool {
+        state != .idle && state != .error
+    }
+    
+    var recordHint: String? {
+        guard state == .idle else {
+            return nil
+        }
+        return messages.isEmpty ? "Hold to record" : "Hold to continue"
     }
     
     var isRecording: Bool {
@@ -39,8 +50,15 @@ final class ConversationViewModel {
     }
     
     var canRecord: Bool {
-        hasMicrophonePermission && 
-        (state.canStartRecording || state == .recording)
+        hasMicrophonePermission && (state.canStartRecording || state.canStopRecording)
+    }
+    
+    var canStopSpeaking: Bool {
+        state == .speaking
+    }
+    
+    var canClear: Bool {
+        state == .idle && !messages.isEmpty
     }
     
     init(

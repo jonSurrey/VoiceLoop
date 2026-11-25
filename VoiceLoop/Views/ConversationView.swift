@@ -19,21 +19,21 @@ struct ConversationView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     HStack(spacing: Layout.titleSpacing) {
-                        if viewModel.state != .idle && viewModel.state != .error {
+                        if viewModel.showsProgress {
                             ProgressView()
                                 .scaleEffect(Layout.titleProgressScale)
                         }
-                        Text(viewModel.state == .idle ? "VoiceLoop" : viewModel.statusText)
+                        Text(viewModel.title)
                             .font(.headline)
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if viewModel.state == .speaking {
+                    if viewModel.canStopSpeaking {
                         Button("Stop") {
                             viewModel.stopSpeaking()
                         }
                         .foregroundColor(.red)
-                    } else if viewModel.state == .idle && !viewModel.messages.isEmpty {
+                    } else if viewModel.canClear {
                         Button(action: {
                             viewModel.clearConversation()
                         }) {
@@ -125,8 +125,8 @@ struct ConversationView: View {
     
     private var recordButtonSection: some View {
         VStack(spacing: Layout.recordSectionSpacing) {
-            if viewModel.state == .idle {
-                Text(viewModel.messages.isEmpty ? "Hold to record" : "Hold to continue")
+            if let recordHint = viewModel.recordHint {
+                Text(recordHint)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
