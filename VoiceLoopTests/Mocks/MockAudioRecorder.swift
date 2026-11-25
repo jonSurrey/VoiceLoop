@@ -2,6 +2,7 @@ import Foundation
 @testable import VoiceLoop
 
 final class MockAudioRecorder: AudioRecording {
+    var onInterruption: (() -> Void)?
     var permission = true
     var startError: Error?
     let recordingFile = URL(fileURLWithPath: "recording.m4a")

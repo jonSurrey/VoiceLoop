@@ -2,6 +2,8 @@ import AVFoundation
 import os
 
 final class AudioRecorder: NSObject, AudioRecording {
+    var onInterruption: (() -> Void)?
+
     private let session = AVAudioSession.sharedInstance()
     private var recorder: AVAudioRecorder?
 
@@ -80,7 +82,10 @@ final class AudioRecorder: NSObject, AudioRecording {
     }
 
     private func interruptionBegan() {
-        recorder?.stop()
+        guard recorder != nil else {
+            return
+        }
+        onInterruption?()
     }
 }
 
