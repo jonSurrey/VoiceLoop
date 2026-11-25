@@ -22,7 +22,6 @@ final class SpeechSynthesizer: NSObject, SpeechSynthesizing {
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         utterance.pitchMultiplier = 1.0
         utterance.volume = 1.0
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         
         synthesizer.speak(utterance)
     }

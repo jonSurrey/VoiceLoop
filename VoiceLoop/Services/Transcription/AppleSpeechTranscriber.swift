@@ -3,11 +3,7 @@ import os
 import Speech
 
 final class AppleSpeechTranscriber: Transcribing {
-    private let recognizer: SFSpeechRecognizer?
-
-    init(locale: Locale = Locale(identifier: "en-US")) {
-        self.recognizer = SFSpeechRecognizer(locale: locale)
-    }
+    private let recognizer = SFSpeechRecognizer()
 
     func transcribe(_ audioURL: URL) async throws -> String {
         guard await Self.requestAuthorization() else {
