@@ -25,7 +25,7 @@ final class AudioRecorder: NSObject, AudioRecording {
         AVAudioApplication.shared.recordPermission == .granted
     }
 
-    func startRecording() throws -> URL {
+    func startRecording() throws {
         do {
             try session.setCategory(.record, mode: .default, options: .allowBluetoothHFP)
             try session.setActive(true)
@@ -37,7 +37,6 @@ final class AudioRecorder: NSObject, AudioRecording {
                 throw RecordingError.failedToStart
             }
             self.recorder = recorder
-            return url
         } catch {
             Logger.audio.error("Recording failed to start: \(error.localizedDescription, privacy: .public)")
             deactivateSession()

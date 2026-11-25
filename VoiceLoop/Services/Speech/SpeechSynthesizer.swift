@@ -1,47 +1,57 @@
-import Foundation
 import AVFoundation
 
 final class SpeechSynthesizer: NSObject, SpeechSynthesizing {
-    private let synthesizer: AVSpeechSynthesizer
-    private var onComplete: (() -> Void)?
-    
+    private let synthesizer = AVSpeechSynthesizer()
+    private var currentUtterance: AVSpeechUtterance?
+    private var finishedSpeaking: CheckedContinuation<Void, Never>?
+
     override init() {
-        self.synthesizer = AVSpeechSynthesizer()
         super.init()
         synthesizer.usesApplicationAudioSession = false
         synthesizer.delegate = self
     }
-    
-    func speak(_ text: String, completion: (() -> Void)? = nil) {
-        if synthesizer.isSpeaking {
-            stop()
-        }
-        
-        self.onComplete = completion
+
+    func speak(_ text: String) async {
+        stop()
         let utterance = AVSpeechUtterance(string: text)
-        
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        utterance.pitchMultiplier = 1.0
-        utterance.volume = 1.0
-        
-        synthesizer.speak(utterance)
-    }
-    
-    func stop() {
-        if synthesizer.isSpeaking || synthesizer.isPaused {
-            synthesizer.stopSpeaking(at: .immediate)
-            onComplete = nil
+        await withCheckedContinuation { continuation in
+            currentUtterance = utterance
+            finishedSpeaking = continuation
+            synthesizer.speak(utterance)
         }
+    }
+
+    func stop() {
+        synthesizer.stopSpeaking(at: .immediate)
+        finish()
+    }
+
+    private func finish(_ utteranceID: ObjectIdentifier) {
+        guard let currentUtterance, ObjectIdentifier(currentUtterance) == utteranceID else {
+            return
+        }
+        finish()
+    }
+
+    private func finish() {
+        currentUtterance = nil
+        finishedSpeaking?.resume()
+        finishedSpeaking = nil
     }
 }
 
 extension SpeechSynthesizer: AVSpeechSynthesizerDelegate {
-    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        onComplete?()
-        onComplete = nil
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        let utteranceID = ObjectIdentifier(utterance)
+        Task { @MainActor in
+            self.finish(utteranceID)
+        }
     }
-    
-    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
-        onComplete = nil
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        let utteranceID = ObjectIdentifier(utterance)
+        Task { @MainActor in
+            self.finish(utteranceID)
+        }
     }
 }

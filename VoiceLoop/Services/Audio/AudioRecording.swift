@@ -5,7 +5,7 @@ protocol AudioRecording: AnyObject {
 
     func requestPermission() async -> Bool
     func checkPermission() -> Bool
-    func startRecording() throws -> URL
+    func startRecording() throws
     func stopRecording() -> URL?
     func deleteRecording(at url: URL)
 }

@@ -89,19 +89,71 @@ struct ConversationViewModelTests {
         #expect(viewModel.messages.map(\.role) == [.user, .assistant])
         #expect(viewModel.messages.map(\.content) == ["Hello AI", "Hello! How can I help?"])
         #expect(synthesizer.spokenTexts == ["Hello! How can I help?"])
+        #expect(viewModel.state == .idle)
     }
 
-    @Test("A failed transcription shows an error")
-    func failedTranscription() async {
+    @Test("Recording while the reply is spoken stops speech and keeps recording")
+    func recordingWhileSpeaking() async {
+        let viewModel = makeViewModel()
+        synthesizer.onSpeak = { viewModel.startRecording() }
+        viewModel.startRecording()
+        let stopsBeforeTurn = synthesizer.stopCount
+
+        await viewModel.stopRecording()
+
+        #expect(synthesizer.stopCount == stopsBeforeTurn + 1)
+        #expect(viewModel.state == .recording)
+    }
+
+    @Test("A failed transcription keeps the recording and Try Again transcribes it")
+    func retryTranscription() async {
         transcriber.result = .failure(TestError())
         let viewModel = makeViewModel()
-
         viewModel.startRecording()
         await viewModel.stopRecording()
 
         #expect(viewModel.state == .error)
-        #expect(viewModel.errorMessage != nil)
-        #expect(viewModel.messages.isEmpty)
+        #expect(viewModel.canRetry)
+        #expect(recorder.deletedURLs.isEmpty)
+
+        transcriber.result = .success("Hello")
+        await viewModel.retry()
+
+        #expect(transcriber.transcribedURLs == [recorder.recordingFile, recorder.recordingFile])
+        #expect(viewModel.messages.map(\.role) == [.user, .assistant])
+        #expect(recorder.deletedURLs == [recorder.recordingFile])
+    }
+
+    @Test("A failed reply offers Try Again, which re-sends without duplicating the user message")
+    func retryReply() async {
+        chat.result = .failure(TestError())
+        let viewModel = makeViewModel()
+        viewModel.startRecording()
+        await viewModel.stopRecording()
+
+        #expect(viewModel.state == .error)
+        #expect(viewModel.canRetry)
+
+        chat.result = .success("Hi there")
+        await viewModel.retry()
+
+        #expect(transcriber.transcribedURLs.count == 1)
+        #expect(chat.receivedHistories.count == 2)
+        #expect(viewModel.messages.map(\.role) == [.user, .assistant])
+    }
+
+    @Test("Dismissing an error deletes the kept recording and returns to idle")
+    func dismissingError() async {
+        transcriber.result = .failure(TestError())
+        let viewModel = makeViewModel()
+        viewModel.startRecording()
+        await viewModel.stopRecording()
+
+        viewModel.dismissError()
+
+        #expect(viewModel.state == .idle)
+        #expect(!viewModel.canRetry)
+        #expect(recorder.deletedURLs == [recorder.recordingFile])
     }
 
     @Test("An interruption stops and deletes the recording and shows an error")
@@ -116,13 +168,16 @@ struct ConversationViewModelTests {
         #expect(recorder.deletedURLs == [recorder.recordingFile])
     }
 
-    @Test("Stopping speech stops the synthesizer and returns to idle")
-    func stoppingSpeech() {
+    @Test("Stopping speech returns to idle and the end of speech changes nothing")
+    func stoppingSpeech() async {
         let viewModel = makeViewModel()
+        synthesizer.onSpeak = { viewModel.stopSpeaking() }
+        viewModel.startRecording()
+        let stopsBeforeTurn = synthesizer.stopCount
 
-        viewModel.stopSpeaking()
+        await viewModel.stopRecording()
 
-        #expect(synthesizer.stopCount == 1)
+        #expect(synthesizer.stopCount == stopsBeforeTurn + 1)
         #expect(viewModel.state == .idle)
     }
 
@@ -132,10 +187,12 @@ struct ConversationViewModelTests {
         viewModel.startRecording()
         await viewModel.stopRecording()
 
+        let stopsBeforeClearing = synthesizer.stopCount
+
         viewModel.clearConversation()
 
         #expect(viewModel.messages.isEmpty)
         #expect(viewModel.state == .idle)
-        #expect(synthesizer.stopCount == 1)
+        #expect(synthesizer.stopCount == stopsBeforeClearing + 1)
     }
 }
