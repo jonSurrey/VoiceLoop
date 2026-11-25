@@ -2,7 +2,7 @@ import Foundation
 
 final class OpenAIChatService: ChatCompleting {
     /// Returns a canned reply so the app works without an OpenAI key or quota.
-    static var isDebugMode: Bool = true
+    static let isDebugMode = true
     private static let debugReply = "This is a mock response for testing. Debug mode is enabled, so no actual API call is being made."
     private static let debugReplyDelay: Duration = .milliseconds(500)
 
