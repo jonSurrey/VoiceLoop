@@ -41,20 +41,15 @@ struct ConversationView: View {
                     }
                 }
             }
-            .alert("Oops!", isPresented: isShowingError) {
-                Button("OK") {
-                    viewModel.dismissError()
-                }
-                if viewModel.canRetry {
+            .alert("Oops!", isPresented: isShowingError, presenting: viewModel.error) { failure in
+                Button("OK", role: .cancel) {}
+                if failure.retryStep != nil {
                     Button("Try Again") {
-                        Task { await viewModel.retry() }
+                        Task { await viewModel.retry(failure) }
                     }
                 }
-            } message: {
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(.body)
-                }
+            } message: { failure in
+                Text(failure.message)
             }
             .task {
                 if !viewModel.hasMicrophonePermission {
@@ -66,10 +61,10 @@ struct ConversationView: View {
     
     private var isShowingError: Binding<Bool> {
         Binding(
-            get: { viewModel.errorMessage != nil },
+            get: { viewModel.error != nil },
             set: { isPresented in
                 if !isPresented {
-                    viewModel.errorMessage = nil
+                    viewModel.dismissError()
                 }
             }
         )
