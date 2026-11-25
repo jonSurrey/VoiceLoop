@@ -6,6 +6,15 @@ struct ConversationError: Equatable {
         case reply
     }
 
+    enum Recovery: Equatable {
+        case retry(RetryStep)
+        case openSettings
+    }
+
     let message: String
-    let retryStep: RetryStep?
+    let recovery: Recovery?
+}
+
+nonisolated protocol RetryableError: Error {
+    var isRetryable: Bool { get }
 }

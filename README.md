@@ -16,11 +16,11 @@ It's a small SwiftUI app built to show clean MVVM, Swift 6 concurrency, and test
 - **Speech to text** with Apple's Speech framework, in the language the user set for speech recognition.
 - **AI replies** from OpenAI Chat Completions (`gpt-4o-mini`), with the whole conversation as context.
 - **Spoken answers** with `AVSpeechSynthesizer`. Stop them at any time, or start talking to interrupt.
-- **Clear progress and errors.** The title shows each step, and a failed step offers Try Again, which
-  retries only that step.
+- **Clear progress and errors.** The title shows each step. When a retry can help, the error offers
+  Try Again, which repeats only the failed step. A missing permission offers a shortcut to Settings.
 - **Polite audio.** The microphone session is active only while recording, so other audio keeps playing
   until you speak. Phone calls and Siri interrupt a recording cleanly.
-- **Dark mode** and system colors throughout.
+- **Dark mode** and system colors throughout. The record button works with VoiceOver.
 - **Debug mode** gives a canned reply, so the app runs without an API key.
 
 ## How it works
@@ -64,8 +64,9 @@ VoiceLoop/
   idle → recording → transcribing → generating → speaking. Each step is an `async` function, so the
   whole flow reads top to bottom and tests can `await` it.
 - **Errors.** Each layer has its own error type (`RecordingError`, `TranscriptionError`, `APIError`)
-  with a user-facing message. The view model remembers which step failed so Try Again repeats only that
-  step. A failed reply doesn't re-transcribe or duplicate your message.
+  with a user-facing message. The view model decides how to recover: Try Again repeats only the step
+  that failed, so a failed reply doesn't re-transcribe or duplicate your message. A missing permission
+  offers Open Settings, and an error a retry can't fix offers neither.
 - **Concurrency.** Swift 6 language mode with main-actor default isolation. The app is UI-driven and
   does no heavy work, so everything runs on the main actor, and network calls suspend without blocking
   it. Apple framework callbacks that can arrive on other threads, such as speech recognition, speech

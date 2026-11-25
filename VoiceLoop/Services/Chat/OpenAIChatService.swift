@@ -24,7 +24,7 @@ final class OpenAIChatService: ChatCompleting {
 
         let request = ChatCompletionRequest(model: model, messages: messages)
         let response: ChatCompletionResponse = try await apiClient.post(request, to: endpoint)
-        guard let reply = response.choices.first?.message.content else {
+        guard let reply = response.choices.first?.message.content, !reply.isEmpty else {
             throw APIError.invalidResponse
         }
         return reply

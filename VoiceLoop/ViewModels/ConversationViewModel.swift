@@ -17,21 +17,32 @@ final class ConversationViewModel {
     
     private var keptRecording: URL?
     
-    var statusText: String {
+    var title: String {
         switch state {
         case .idle:
-            return ""
+            "VoiceLoop"
         case .recording:
-            return "Recording..."
+            "Recording..."
         case .transcribing:
-            return "Transcribing audio..."
+            "Transcribing audio..."
         case .generating:
-            return "Generating response..."
+            "Generating response..."
         case .speaking:
-            return "Speaking response..."
+            "Speaking response..."
         case .error:
-            return "Error occurred"
+            "Error occurred"
         }
+    }
+    
+    var showsProgress: Bool {
+        state != .idle && state != .error
+    }
+    
+    var recordHint: String? {
+        guard state == .idle else {
+            return nil
+        }
+        return messages.isEmpty ? "Hold to record" : "Hold to continue"
     }
     
     var isRecording: Bool {
@@ -39,8 +50,15 @@ final class ConversationViewModel {
     }
     
     var canRecord: Bool {
-        hasMicrophonePermission && 
-        (state.canStartRecording || state == .recording)
+        hasMicrophonePermission && (state.canStartRecording || state.canStopRecording)
+    }
+    
+    var canStopSpeaking: Bool {
+        state == .speaking
+    }
+    
+    var canClear: Bool {
+        state == .idle && !messages.isEmpty
     }
     
     init(
@@ -64,18 +82,12 @@ final class ConversationViewModel {
         let granted = await recorder.requestPermission()
         hasMicrophonePermission = granted
         
-        guard granted else {
-            fail(message: "Microphone permission is required to use this app.")
-            return
+        if !granted {
+            fail(message: "VoiceLoop needs the microphone to hear you. Turn it on in Settings.", recovery: .openSettings)
         }
     }
     
     func startRecording() {
-        guard hasMicrophonePermission else {
-            fail(message: "Microphone access is required. Please enable it in Settings.")
-            return
-        }
-        
         guard state.canStartRecording else {
             return
         }
@@ -104,7 +116,7 @@ final class ConversationViewModel {
     }
     
     func retry(_ failure: ConversationError) async {
-        guard let step = failure.retryStep else {
+        guard case .retry(let step) = failure.recovery else {
             return
         }
         error = nil
@@ -130,8 +142,13 @@ final class ConversationViewModel {
         do {
             transcript = try await transcriber.transcribe(recordingURL)
         } catch {
-            keptRecording = recordingURL
-            fail(with: error, retry: .transcribe(recordingURL))
+            let recovery = recovery(for: error, retrying: .transcribe(recordingURL))
+            if case .retry = recovery {
+                keptRecording = recordingURL
+            } else {
+                recorder.deleteRecording(at: recordingURL)
+            }
+            fail(with: error, recovery: recovery)
             return
         }
         
@@ -147,7 +164,7 @@ final class ConversationViewModel {
         do {
             answer = try await chat.reply(to: messages)
         } catch {
-            fail(with: error, retry: .reply)
+            fail(with: error, recovery: recovery(for: error, retrying: .reply))
             return
         }
         
@@ -160,12 +177,23 @@ final class ConversationViewModel {
         }
     }
     
-    private func fail(with failure: Error, retry step: ConversationError.RetryStep? = nil) {
-        fail(message: (failure as? LocalizedError)?.errorDescription ?? Self.genericErrorMessage, retry: step)
+    private func recovery(for failure: Error, retrying step: ConversationError.RetryStep) -> ConversationError.Recovery? {
+        switch failure {
+        case TranscriptionError.notAuthorized:
+            .openSettings
+        case let failure as RetryableError where failure.isRetryable:
+            .retry(step)
+        default:
+            nil
+        }
     }
     
-    private func fail(message: String, retry step: ConversationError.RetryStep? = nil) {
-        error = ConversationError(message: message, retryStep: step)
+    private func fail(with failure: Error, recovery: ConversationError.Recovery? = nil) {
+        fail(message: (failure as? LocalizedError)?.errorDescription ?? Self.genericErrorMessage, recovery: recovery)
+    }
+    
+    private func fail(message: String, recovery: ConversationError.Recovery? = nil) {
+        error = ConversationError(message: message, recovery: recovery)
         state = .error
     }
     
@@ -193,8 +221,6 @@ final class ConversationViewModel {
     
     func clearConversation() {
         messages.removeAll()
-        state = .idle
-        error = nil
-        synthesizer.stop()
+        discardKeptRecording()
     }
 }

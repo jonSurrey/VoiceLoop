@@ -22,17 +22,6 @@ struct ConversationViewModelTests {
         #expect(viewModel.error == nil)
     }
 
-    @Test("Recording without microphone permission shows an error")
-    func recordingWithoutPermission() {
-        recorder.permission = false
-        let viewModel = makeViewModel()
-
-        viewModel.startRecording()
-
-        #expect(viewModel.state == .error)
-        #expect(viewModel.error != nil)
-    }
-
     @Test("Denying microphone permission shows an error")
     func denyingPermission() async {
         recorder.permission = false
@@ -41,7 +30,31 @@ struct ConversationViewModelTests {
         await viewModel.requestMicrophonePermission()
 
         #expect(!viewModel.hasMicrophonePermission)
+        #expect(viewModel.error?.recovery == .openSettings)
+    }
+
+    @Test("Denied speech recognition offers Settings and discards the recording")
+    func deniedSpeechRecognition() async {
+        transcriber.result = .failure(TranscriptionError.notAuthorized)
+        let viewModel = makeViewModel()
+        viewModel.startRecording()
+
+        await viewModel.stopRecording()
+
+        #expect(viewModel.error?.recovery == .openSettings)
+        #expect(recorder.deletedURLs == [recorder.recordingFile])
+    }
+
+    @Test("A failure that a retry can't fix doesn't offer Try Again")
+    func nonRetryableFailure() async {
+        chat.result = .failure(APIError.missingAPIKey)
+        let viewModel = makeViewModel()
+        viewModel.startRecording()
+
+        await viewModel.stopRecording()
+
         #expect(viewModel.state == .error)
+        #expect(viewModel.error?.recovery == nil)
     }
 
     @Test("Starting a recording moves to recording")
@@ -113,7 +126,7 @@ struct ConversationViewModelTests {
         await viewModel.stopRecording()
 
         let failure = try #require(viewModel.error)
-        #expect(failure.retryStep == .transcribe(recorder.recordingFile))
+        #expect(failure.recovery == .retry(.transcribe(recorder.recordingFile)))
         #expect(recorder.deletedURLs.isEmpty)
 
         transcriber.result = .success("Hello")
@@ -132,7 +145,7 @@ struct ConversationViewModelTests {
         await viewModel.stopRecording()
 
         let failure = try #require(viewModel.error)
-        #expect(failure.retryStep == .reply)
+        #expect(failure.recovery == .retry(.reply))
 
         chat.result = .success("Hi there")
         await viewModel.retry(failure)
@@ -208,18 +221,31 @@ struct ConversationViewModelTests {
         #expect(viewModel.state == .idle)
     }
 
-    @Test("Clearing the conversation removes messages and stops speech")
+    @Test("Clearing is offered only when idle with messages")
+    func clearingAvailability() async {
+        let viewModel = makeViewModel()
+        #expect(!viewModel.canClear)
+
+        viewModel.startRecording()
+        #expect(!viewModel.canClear)
+
+        await viewModel.stopRecording()
+        #expect(viewModel.canClear)
+    }
+
+    @Test("Clearing the conversation removes messages and the recording kept for retry")
     func clearingConversation() async {
         let viewModel = makeViewModel()
         viewModel.startRecording()
         await viewModel.stopRecording()
-
-        let stopsBeforeClearing = synthesizer.stopCount
+        transcriber.result = .failure(TestError())
+        viewModel.startRecording()
+        await viewModel.stopRecording()
+        viewModel.dismissError()
 
         viewModel.clearConversation()
 
         #expect(viewModel.messages.isEmpty)
-        #expect(viewModel.state == .idle)
-        #expect(synthesizer.stopCount == stopsBeforeClearing + 1)
+        #expect(recorder.deletedURLs == [recorder.recordingFile, recorder.recordingFile])
     }
 }

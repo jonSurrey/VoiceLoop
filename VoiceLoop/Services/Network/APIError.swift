@@ -30,8 +30,22 @@ enum APIError: LocalizedError, Equatable {
     }
 }
 
-enum HTTPStatus {
+extension APIError: RetryableError {
+    var isRetryable: Bool {
+        switch self {
+        case .network, .invalidResponse:
+            true
+        case .server(let statusCode):
+            statusCode == HTTPStatus.tooManyRequests || HTTPStatus.serverError.contains(statusCode)
+        case .missingAPIKey, .invalidURL, .invalidRequest:
+            false
+        }
+    }
+}
+
+nonisolated enum HTTPStatus {
     static let success = 200..<300
     static let unauthorized = 401
     static let tooManyRequests = 429
+    static let serverError = 500..<600
 }

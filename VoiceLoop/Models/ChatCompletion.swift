@@ -21,7 +21,7 @@ struct ChatCompletionResponse: Decodable {
     }
 
     struct ChatMessage: Decodable {
-        let content: String
+        let content: String?
     }
 
     let choices: [Choice]
