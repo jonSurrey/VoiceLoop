@@ -221,18 +221,19 @@ struct ConversationViewModelTests {
         #expect(viewModel.state == .idle)
     }
 
-    @Test("Clearing the conversation removes messages and stops speech")
+    @Test("Clearing the conversation removes messages and the recording kept for retry")
     func clearingConversation() async {
         let viewModel = makeViewModel()
         viewModel.startRecording()
         await viewModel.stopRecording()
-
-        let stopsBeforeClearing = synthesizer.stopCount
+        transcriber.result = .failure(TestError())
+        viewModel.startRecording()
+        await viewModel.stopRecording()
+        viewModel.dismissError()
 
         viewModel.clearConversation()
 
         #expect(viewModel.messages.isEmpty)
-        #expect(viewModel.state == .idle)
-        #expect(synthesizer.stopCount == stopsBeforeClearing + 1)
+        #expect(recorder.deletedURLs == [recorder.recordingFile, recorder.recordingFile])
     }
 }

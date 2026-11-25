@@ -203,8 +203,6 @@ final class ConversationViewModel {
     
     func clearConversation() {
         messages.removeAll()
-        state = .idle
-        error = nil
-        synthesizer.stop()
+        discardKeptRecording()
     }
 }
