@@ -10,24 +10,24 @@ final class AppleSpeechTranscriber: Transcribing {
     
     func transcribe(_ audioURL: URL) async throws -> String {
         guard FileManager.default.fileExists(atPath: audioURL.path) else {
-            throw APIError.serverError("Audio file not found")
+            throw TranscriptionError.recognitionFailed
         }
         
         guard let attributes = try? FileManager.default.attributesOfItem(atPath: audioURL.path),
               let fileSize = attributes[.size] as? Int64, fileSize > 0 else {
-            throw APIError.serverError("Audio file is empty")
+            throw TranscriptionError.recognitionFailed
         }
         
         guard await requestPermission() else {
-            throw APIError.serverError("Speech recognition permission denied. Please enable it in Settings.")
+            throw TranscriptionError.notAuthorized
         }
         
         guard let recognizer = recognizer else {
-            throw APIError.serverError("Speech recognition is not supported for this language.")
+            throw TranscriptionError.unavailable
         }
         
         guard recognizer.isAvailable else {
-            throw APIError.serverError("Speech recognition is temporarily unavailable. Please try again.")
+            throw TranscriptionError.unavailable
         }
         
         let request = SFSpeechURLRecognitionRequest(url: audioURL)
@@ -35,13 +35,13 @@ final class AppleSpeechTranscriber: Transcribing {
         
         return try await withCheckedThrowingContinuation { continuation in
             recognizer.recognitionTask(with: request) { result, error in
-                if let error = error {
-                    continuation.resume(throwing: APIError.networkError(error))
+                if error != nil {
+                    continuation.resume(throwing: TranscriptionError.recognitionFailed)
                     return
                 }
                 
                 guard let result = result else {
-                    continuation.resume(throwing: APIError.serverError("No transcription result"))
+                    continuation.resume(throwing: TranscriptionError.recognitionFailed)
                     return
                 }
                 
