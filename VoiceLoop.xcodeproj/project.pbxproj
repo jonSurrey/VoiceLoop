@@ -14,19 +14,11 @@
 			remoteGlobalIDString = 136949D72EBA32EC001C3ACE;
 			remoteInfo = "VoiceLoop";
 		};
-		136949F02EBA32ED001C3ACE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 136949D02EBA32EC001C3ACE /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 136949D72EBA32EC001C3ACE;
-			remoteInfo = "VoiceLoop";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		136949D82EBA32EC001C3ACE /* VoiceLoop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VoiceLoop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		136949E52EBA32ED001C3ACE /* VoiceLoopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoiceLoopTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		136949EF2EBA32ED001C3ACE /* VoiceLoopUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoiceLoopUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1C0F1E02EC0000000000001 /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
 		A1C0F1E02EC0000000000002 /* Local.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -55,11 +47,6 @@
 			path = "VoiceLoopTests";
 			sourceTree = "<group>";
 		};
-		136949F22EBA32ED001C3ACE /* VoiceLoopUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "VoiceLoopUITests";
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,13 +64,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		136949EC2EBA32ED001C3ACE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -92,7 +72,6 @@
 			children = (
 				136949DA2EBA32EC001C3ACE /* VoiceLoop */,
 				136949E82EBA32ED001C3ACE /* VoiceLoopTests */,
-				136949F22EBA32ED001C3ACE /* VoiceLoopUITests */,
 				A1C0F1E02EC0000000000003 /* Config */,
 				136949D92EBA32EC001C3ACE /* Products */,
 			);
@@ -112,7 +91,6 @@
 			children = (
 				136949D82EBA32EC001C3ACE /* VoiceLoop.app */,
 				136949E52EBA32ED001C3ACE /* VoiceLoopTests.xctest */,
-				136949EF2EBA32ED001C3ACE /* VoiceLoopUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -165,29 +143,6 @@
 			productReference = 136949E52EBA32ED001C3ACE /* VoiceLoopTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		136949EE2EBA32ED001C3ACE /* VoiceLoopUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 136949FF2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "VoiceLoopUITests" */;
-			buildPhases = (
-				136949EB2EBA32ED001C3ACE /* Sources */,
-				136949EC2EBA32ED001C3ACE /* Frameworks */,
-				136949ED2EBA32ED001C3ACE /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				136949F12EBA32ED001C3ACE /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				136949F22EBA32ED001C3ACE /* VoiceLoopUITests */,
-			);
-			name = "VoiceLoopUITests";
-			packageProductDependencies = (
-			);
-			productName = "VoiceLoopUITests";
-			productReference = 136949EF2EBA32ED001C3ACE /* VoiceLoopUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -202,10 +157,6 @@
 						CreatedOnToolsVersion = 16.3;
 					};
 					136949E42EBA32ED001C3ACE = {
-						CreatedOnToolsVersion = 16.3;
-						TestTargetID = 136949D72EBA32EC001C3ACE;
-					};
-					136949EE2EBA32ED001C3ACE = {
 						CreatedOnToolsVersion = 16.3;
 						TestTargetID = 136949D72EBA32EC001C3ACE;
 					};
@@ -227,7 +178,6 @@
 			targets = (
 				136949D72EBA32EC001C3ACE /* VoiceLoop */,
 				136949E42EBA32ED001C3ACE /* VoiceLoopTests */,
-				136949EE2EBA32ED001C3ACE /* VoiceLoopUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -241,13 +191,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		136949E32EBA32ED001C3ACE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		136949ED2EBA32ED001C3ACE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -271,13 +214,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		136949EB2EBA32ED001C3ACE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -285,11 +221,6 @@
 			isa = PBXTargetDependency;
 			target = 136949D72EBA32EC001C3ACE /* VoiceLoop */;
 			targetProxy = 136949E62EBA32ED001C3ACE /* PBXContainerItemProxy */;
-		};
-		136949F12EBA32ED001C3ACE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 136949D72EBA32EC001C3ACE /* VoiceLoop */;
-			targetProxy = 136949F02EBA32ED001C3ACE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -347,7 +278,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -405,7 +336,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -424,12 +355,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "VoiceLoop/Info.plist";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VoiceLoop/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VoiceLoop;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "VoiceLoop records your voice so it can answer you.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "VoiceLoop turns your recording into text before sending it to the AI.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -441,7 +374,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -454,12 +387,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "VoiceLoop/Info.plist";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VoiceLoop/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VoiceLoop;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "VoiceLoop records your voice so it can answer you.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "VoiceLoop turns your recording into text before sending it to the AI.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -471,7 +406,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -483,14 +418,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoopTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceLoop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VoiceLoop";
 			};
 			name = Debug;
@@ -503,47 +437,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoopTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceLoop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VoiceLoop";
-			};
-			name = Release;
-		};
-		13694A002EBA32EE001C3ACE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoopUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "VoiceLoop";
-			};
-			name = Debug;
-		};
-		13694A012EBA32EE001C3ACE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.surrey.VoiceLoopUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "VoiceLoop";
 			};
 			name = Release;
 		};
@@ -573,15 +474,6 @@
 			buildConfigurations = (
 				136949FD2EBA32EE001C3ACE /* Debug */,
 				136949FE2EBA32EE001C3ACE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		136949FF2EBA32EE001C3ACE /* Build configuration list for PBXNativeTarget "VoiceLoopUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				13694A002EBA32EE001C3ACE /* Debug */,
-				13694A012EBA32EE001C3ACE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
