@@ -69,7 +69,7 @@ final class ConversationViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.isRecording)
     }
     
-    func testStopRecordingTriggersProcessing() {
+    func testStopRecordingTriggersProcessing() async {
         recorder.hasPermission = true
         viewModel = ConversationViewModel(
             recorder: recorder,
@@ -79,7 +79,7 @@ final class ConversationViewModelTests: XCTestCase {
         )
         
         viewModel.startRecording()
-        viewModel.stopRecording()
+        await viewModel.stopRecording()
         
         XCTAssertTrue(recorder.stopRecordingCalled)
     }
@@ -97,9 +97,7 @@ final class ConversationViewModelTests: XCTestCase {
         )
         
         viewModel.startRecording()
-        viewModel.stopRecording()
-        
-        try await Task.sleep(nanoseconds: 100_000_000)
+        await viewModel.stopRecording()
         
         XCTAssertEqual(viewModel.messages.count, 2)
         XCTAssertEqual(viewModel.messages[0].content, "Hello AI")
@@ -121,9 +119,7 @@ final class ConversationViewModelTests: XCTestCase {
         )
         
         viewModel.startRecording()
-        viewModel.stopRecording()
-        
-        try await Task.sleep(nanoseconds: 100_000_000)
+        await viewModel.stopRecording()
         
         XCTAssertEqual(viewModel.state, .error)
         XCTAssertNotNil(viewModel.errorMessage)
