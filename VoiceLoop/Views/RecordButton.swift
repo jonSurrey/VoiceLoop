@@ -42,18 +42,15 @@ struct RecordButton: View {
         .onLongPressGesture(
             minimumDuration: 0,
             maximumDistance: .infinity,
-            pressing: { pressing in
-                if pressing {
-                    if !isRecording && isEnabled {
-                        onStartRecording()
-                    }
+            pressing: { isPressing in
+                if isPressing {
+                    onStartRecording()
                 } else {
-                    if isRecording {
-                        onStopRecording()
-                    }
+                    onStopRecording()
                 }
             }, perform: {}
         )
+        .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : Layout.disabledOpacity)
     }
 
