@@ -1,7 +1,6 @@
 import Foundation
 import SwiftUI
 
-@MainActor
 class ConversationViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var state: AppState = .idle

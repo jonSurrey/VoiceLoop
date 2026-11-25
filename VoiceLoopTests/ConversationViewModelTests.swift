@@ -1,7 +1,6 @@
 import XCTest
 @testable import VoiceLoop
 
-@MainActor
 final class ConversationViewModelTests: XCTestCase {
     var viewModel: ConversationViewModel!
     var mockAudio: MockAudioRecordingService!
@@ -209,7 +208,6 @@ final class MockChatService: ChatProtocol {
     }
 }
 
-@MainActor
 final class MockTextToSpeechService: TextToSpeechProtocol {
     var speakCalled = false
     var stopCalled = false

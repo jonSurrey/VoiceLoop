@@ -1,7 +1,6 @@
 import Foundation
 import AVFoundation
 
-@MainActor
 final class TextToSpeechService: NSObject, TextToSpeechProtocol {
     private let synthesizer: AVSpeechSynthesizer
     private var onComplete: (() -> Void)?
