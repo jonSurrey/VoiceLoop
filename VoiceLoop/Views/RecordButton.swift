@@ -51,6 +51,17 @@ struct RecordButton: View {
             }, perform: {}
         )
         .disabled(!isEnabled)
+        .accessibilityElement()
+        .accessibilityLabel(isRecording ? "Stop recording" : "Record")
+        .accessibilityHint(isRecording ? "Sends your message." : "Starts recording your message.")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction {
+            if isRecording {
+                onStopRecording()
+            } else {
+                onStartRecording()
+            }
+        }
         .opacity(isEnabled ? 1 : Layout.disabledOpacity)
     }
 
