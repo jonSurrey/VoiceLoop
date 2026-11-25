@@ -1,133 +1,96 @@
-import Foundation
 import AVFoundation
+import os
 
 final class AudioRecorder: NSObject, AudioRecording {
-    private var isRecording: Bool {
-        audioRecorder?.isRecording ?? false
-    }
-    
-    private var audioRecorder: AVAudioRecorder?
-    private var audioSession: AVAudioSession
-    private var currentRecordingURL: URL?
-    
+    private let session = AVAudioSession.sharedInstance()
+    private var recorder: AVAudioRecorder?
+
     override init() {
-        self.audioSession = .sharedInstance()
         super.init()
-        setupAudioSession()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(sessionWasInterrupted(_:)),
+            name: AVAudioSession.interruptionNotification,
+            object: session
+        )
     }
-    
-    private func setupAudioSession() {
-        do {
-            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
-            try audioSession.setActive(true)
-            
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(handleInterruption),
-                name: AVAudioSession.interruptionNotification,
-                object: audioSession
-            )
-        } catch {
-            print("Failed to setup audio session: \(error.localizedDescription)")
-        }
-    }
-    
+
     func requestPermission() async -> Bool {
         await AVAudioApplication.requestRecordPermission()
     }
-    
+
     func checkPermission() -> Bool {
         AVAudioApplication.shared.recordPermission == .granted
     }
-    
+
     func startRecording() throws -> URL {
-        if isRecording {
-            audioRecorder?.stop()
-        }
-        
-        if !audioSession.isOtherAudioPlaying {
-            try? audioSession.setActive(true)
-        }
-        
-        let fileName = "recording_\(Date().timeIntervalSince1970).m4a"
-        let recordingURL = getTemporaryDirectory().appendingPathComponent(fileName)
-        
-        let recorder = try AVAudioRecorder(url: recordingURL, settings: AudioSettings.recordingSettings)
-        recorder.delegate = self
-        
-        guard recorder.prepareToRecord() else {
+        do {
+            try session.setCategory(.record, mode: .default, options: .allowBluetoothHFP)
+            try session.setActive(true)
+            let url = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension(AudioSettings.fileExtension)
+            let recorder = try AVAudioRecorder(url: url, settings: AudioSettings.recordingSettings)
+            guard recorder.record() else {
+                throw RecordingError.failedToStart
+            }
+            self.recorder = recorder
+            return url
+        } catch {
+            Logger.audio.error("Recording failed to start: \(error.localizedDescription, privacy: .public)")
+            deactivateSession()
             throw RecordingError.failedToStart
         }
-        
-        guard recorder.record() else {
-            throw RecordingError.failedToStart
-        }
-        
-        audioRecorder = recorder
-        currentRecordingURL = recordingURL
-        return recordingURL
     }
-    
+
     func stopRecording() -> URL? {
-        defer {
-            audioRecorder = nil
+        guard let recorder else {
+            return nil
         }
-        
-        guard let recorder = audioRecorder, recorder.isRecording else {
-            return currentRecordingURL
-        }
-        
         recorder.stop()
-        return currentRecordingURL
+        self.recorder = nil
+        deactivateSession()
+        return recorder.url
     }
-    
-    private func getTemporaryDirectory() -> URL {
-        FileManager.default.temporaryDirectory
-    }
-    
+
     func deleteRecording(at url: URL) {
-        try? FileManager.default.removeItem(at: url)
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch {
+            Logger.audio.error("Recording couldn't be deleted: \(error.localizedDescription, privacy: .public)")
+        }
     }
-    
-    @objc private func handleInterruption(notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
-              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+
+    private func deactivateSession() {
+        do {
+            try session.setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            Logger.audio.error("Audio session couldn't be deactivated: \(error.localizedDescription, privacy: .public)")
+        }
+    }
+
+    @objc private nonisolated func sessionWasInterrupted(_ notification: Notification) {
+        guard let rawType = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+              AVAudioSession.InterruptionType(rawValue: rawType) == .began else {
             return
         }
-        
-        if type == .began && isRecording {
-            audioRecorder?.stop()
+        Task { @MainActor in
+            self.interruptionBegan()
         }
     }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-        try? audioSession.setActive(false)
+
+    private func interruptionBegan() {
+        recorder?.stop()
     }
 }
 
 enum RecordingError: LocalizedError {
     case failedToStart
-    
+
     var errorDescription: String? {
         switch self {
         case .failedToStart:
-            return "Couldn't start recording. Please try again."
-        }
-    }
-}
-
-extension AudioRecorder: AVAudioRecorderDelegate {
-    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
-        if !flag {
-            print("Recording did not finish successfully")
-        }
-    }
-    
-    func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
-        if let error = error {
-            print("Recording encoding error: \(error.localizedDescription)")
+            "Couldn't start recording. Please try again."
         }
     }
 }

@@ -8,7 +8,8 @@ final class SpeechSynthesizer: NSObject, SpeechSynthesizing {
     override init() {
         self.synthesizer = AVSpeechSynthesizer()
         super.init()
-        self.synthesizer.delegate = self
+        synthesizer.usesApplicationAudioSession = false
+        synthesizer.delegate = self
     }
     
     func speak(_ text: String, completion: (() -> Void)? = nil) {
